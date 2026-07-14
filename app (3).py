@@ -159,11 +159,15 @@ elif page == "Dataset Overview":
     st.dataframe(df.dtypes)
 
 
-elif page == "Exploratory Data Analysis":
-    st.title("Exploratory Data Analysis")
-st.subheader("Interactive Filters")
 
-col1, col2, col3 = st.columns(3)
+elif page == "Exploratory Data Analysis":
+
+    st.title("Exploratory Data Analysis")
+
+    st.subheader("Interactive Filters")
+
+    col1, col2, col3 = st.columns(3)
+
 
 with col1:
     age_filter = st.multiselect(
@@ -221,7 +225,8 @@ with col1:
 with col2:
     st.subheader("Gender Distribution")
     st.bar_chart(filtered_df["Gender"].value_counts())
-    col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
+
 
 with col1:
     st.subheader("Banking Usage Frequency")
@@ -230,7 +235,7 @@ with col1:
 with col2:
     st.subheader("Platform Usage")
     st.bar_chart(filtered_df["Platform"].value_counts())
-    col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Awareness Level")
@@ -275,6 +280,7 @@ st.subheader("Filtered Dataset")
 
 st.dataframe(filtered_df, use_container_width=True)
 csv = filtered_df.to_csv(index=False)
+
 
 st.download_button(
     "Download Filtered Dataset",
