@@ -569,11 +569,10 @@ elif page == "Cyber Awareness Assessment":
             )
 
     st.write("---")
-    st.subheader("Section 2: Practical Security Scenarios")
+    st.subheader("Practical Security Scenarios")
 
     phishing_scenario = st.radio(
-        """
-        8. You receive an email stating that your bank account will be
+        """8. You receive an email stating that your bank account will be
         suspended unless you click a link immediately. What would you do?
         """,
         [
@@ -604,8 +603,7 @@ elif page == "Cyber Awareness Assessment":
             )
 
     otp_scenario = st.radio(
-        """
-        9. Someone claiming to be from your bank asks for your OTP.
+        """9. Someone claiming to be from your bank asks for your OTP.
         What would you do?
         """,
         [
@@ -636,8 +634,7 @@ elif page == "Cyber Awareness Assessment":
             )
 
     login_alert_scenario = st.radio(
-        """
-        10. You receive a security alert saying that someone logged into
+        """10. You receive a security alert saying that someone logged into
         your account from another device. What is your first action?
         """,
         [
@@ -663,8 +660,7 @@ elif page == "Cyber Awareness Assessment":
             )
 
     deepfake_scenario = st.radio(
-        """
-        11. You receive a voice call that sounds like your bank manager
+        """11. You receive a voice call that sounds like your bank manager
         asking you to urgently approve a transaction. What would you do?
         """,
         [
@@ -695,7 +691,7 @@ elif page == "Cyber Awareness Assessment":
             )
 
     st.write("---")
-    st.subheader("Section 3: Online Banking Security Behaviour")
+    st.subheader("Online Banking Security Behaviour")
 
     unique_password = st.radio(
         "12. How often do you use a unique password for online banking?",
@@ -782,7 +778,7 @@ elif page == "Cyber Awareness Assessment":
             )
 
     st.write("---")
-    st.subheader("Section 4: Biometric Authentication Awareness")
+    st.subheader("Biometric Authentication Awareness")
 
     biometric_understanding = st.radio(
         """
@@ -817,7 +813,7 @@ elif page == "Cyber Awareness Assessment":
             )
 
     biometric_protection = st.radio(
-        "17. Do you understand how your biometric data should be stored and protected?",
+        ""17. Do you understand how your biometric data should be stored and protected?"",
         [
             "Strongly Agree",
             "Agree",
