@@ -161,56 +161,127 @@ elif page == "Dataset Overview":
 
 elif page == "Exploratory Data Analysis":
     st.title("Exploratory Data Analysis")
+st.subheader("Interactive Filters")
 
-    option = st.selectbox(
-        "Select Analysis",
-        [
-            "Age Distribution",
-            "Gender Distribution",
-            "Banking Usage",
-            "Platform Usage",
-            "Awareness Level",
-            "Behaviour Level",
-            "Biometric Level",
-            "Correlation Heatmap"
-        ]
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    age_filter = st.multiselect(
+        "Age",
+        options=df["Age"].unique(),
+        default=df["Age"].unique()
     )
 
-    if option == "Age Distribution":
-        st.bar_chart(df["Age"].value_counts())
+with col2:
+    gender_filter = st.multiselect(
+        "Gender",
+        options=df["Gender"].unique(),
+        default=df["Gender"].unique()
+    )
 
-    elif option == "Gender Distribution":
-        st.bar_chart(df["Gender"].value_counts())
+with col3:
+    banking_filter = st.multiselect(
+        "Banking Usage",
+        options=df["Banking_Use"].unique(),
+        default=df["Banking_Use"].unique()
+    )
 
-    elif option == "Banking Usage":
-        st.bar_chart(df["Banking_Use"].value_counts())
+filtered_df = df[
+    (df["Age"].isin(age_filter)) &
+    (df["Gender"].isin(gender_filter)) &
+    (df["Banking_Use"].isin(banking_filter))
+]
 
-    elif option == "Platform Usage":
-        st.bar_chart(df["Platform"].value_counts())
+st.subheader("Dataset Summary")
 
-    elif option == "Awareness Level":
-        st.bar_chart(df["Awareness_Level"].value_counts())
+c1, c2, c3, c4 = st.columns(4)
 
-    elif option == "Behaviour Level":
-        st.bar_chart(df["Behaviour_Level"].value_counts())
+c1.metric("Responses", len(filtered_df))
 
-    elif option == "Biometric Level":
-        st.bar_chart(df["Biometric_Level"].value_counts())
+c2.metric(
+    "Average Awareness",
+    round(filtered_df["Awareness_Score"].mean(),1)
+)
 
-    elif option == "Correlation Heatmap":
-        corr_cols = [
-            "Awareness_Score",
-            "Opinion_Score",
-            "Behaviour_Score",
-            "Biometric_Score"
-        ]
+c3.metric(
+    "Mobile App Users",
+    filtered_df["Platform"].value_counts().get("Mobile App",0)
+)
 
-        corr = df[corr_cols].corr()
+c4.metric(
+    "High Awareness",
+    filtered_df["Awareness_Level"].value_counts().get("High",0)
+)
+col1, col2 = st.columns(2)
 
-        fig, ax = plt.subplots(figsize=(7, 5))
-        sns.heatmap(corr, annot=True, cmap="Blues", ax=ax)
-        st.pyplot(fig)
+with col1:
+    st.subheader("Age Distribution")
+    st.bar_chart(filtered_df["Age"].value_counts())
 
+with col2:
+    st.subheader("Gender Distribution")
+    st.bar_chart(filtered_df["Gender"].value_counts())
+    col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("Banking Usage Frequency")
+    st.bar_chart(filtered_df["Banking_Use"].value_counts())
+
+with col2:
+    st.subheader("Platform Usage")
+    st.bar_chart(filtered_df["Platform"].value_counts())
+    col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("Awareness Level")
+    st.bar_chart(filtered_df["Awareness_Level"].value_counts())
+
+with col2:
+    st.subheader("Behaviour Level")
+    st.bar_chart(filtered_df["Behaviour_Level"].value_counts())
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("Biometric Understanding")
+    st.bar_chart(filtered_df["Biometric_Level"].value_counts())
+
+with col2:
+    st.subheader("Biggest Security Concern")
+    st.bar_chart(filtered_df["Biggest_Concern"].value_counts())
+
+st.subheader("Correlation Between Scores")
+
+corr = filtered_df[
+    [
+        "Awareness_Score",
+        "Opinion_Score",
+        "Behaviour_Score",
+        "Biometric_Score"
+    ]
+].corr()
+
+fig, ax = plt.subplots(figsize=(7,5))
+sns.heatmap(
+    corr,
+    annot=True,
+    cmap="Blues",
+    square=True,
+    ax=ax
+)
+
+st.pyplot(fig)
+st.subheader("Filtered Dataset")
+
+st.dataframe(filtered_df, use_container_width=True)
+csv = filtered_df.to_csv(index=False)
+
+st.download_button(
+    "Download Filtered Dataset",
+    csv,
+    file_name="Filtered_Data.csv",
+    mime="text/csv"
+)
 
 elif page == "Cyber Awareness Assessment":
     st.title("Cyber Awareness Assessment")
