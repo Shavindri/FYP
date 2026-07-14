@@ -280,57 +280,39 @@ elif page == "Exploratory Data Analysis":
             st.bar_chart(filtered_df["Biggest_Concern"].value_counts())
 
         st.write("---")
-        st.subheader("Correlation Between Scores")
+st.subheader("Correlation Between Scores")
 
-        corr_cols = [
-            "Awareness_Score",
-            "Opinion_Score",
-            "Behaviour_Score",
-            "Biometric_Score"
-        ]
+corr = filtered_df[
+    [
+        "Awareness_Score",
+        "Opinion_Score",
+        "Behaviour_Score",
+        "Biometric_Score"
+    ]
+].corr()
 
-        available_corr_cols = [
-            column for column in corr_cols
-            if column in filtered_df.columns
-        ]
+fig, ax = plt.subplots(figsize=(5, 4))
 
-        if len(available_corr_cols) >= 2:
-            corr = filtered_df[available_corr_cols].corr()
+sns.heatmap(
+    corr,
+    annot=True,
+    cmap="Blues",
+    fmt=".2f",
+    square=True,
+    linewidths=0.5,
+    cbar=False,
+    annot_kws={"size": 9},
+    ax=ax
+)
 
-            fig, ax = plt.subplots(figsize=(5, 3.5))
-            sns.heatmap(
-                sns.heatmap(
-                    corr,
-                    annot=True,
-                    cmap="Blues",
-                    fmt=".2f",
-                    square=True,
-                    linewidths=0.5,
-                    cbar=False,
-                    annot_kws={"size": 9},
-                    ax=ax
-            )
-                plt.xticks(rotation=20, fontsize=8)
-                plt.yticks(rotation=0, fontsize=8)
-                plt.tight_layout()
+plt.xticks(rotation=20, fontsize=8)
+plt.yticks(rotation=0, fontsize=8)
+plt.tight_layout()
 
-                left, center, right = st.columns([1, 2, 1])
+left, centre, right = st.columns([1, 2, 1])
 
-                with center:
-                st.pyplot(fig)
-            st.subheader("Correlation Between Scores")
-
-
-
-
-
-
-
-            
-            ax.set_title("Correlation Matrix")
-            plt.tight_layout()
-            st.pyplot(fig)
-            plt.close(fig)
+with centre:
+    st.pyplot(fig)
         else:
             st.info("Not enough score columns are available for correlation analysis.")
 
