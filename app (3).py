@@ -781,8 +781,7 @@ elif page == "Cyber Awareness Assessment":
     st.subheader("Biometric Authentication Awareness")
 
     biometric_understanding = st.radio(
-        """
-        16. Do you understand what biometric data, such as facial or
+        """16. Do you understand what biometric data, such as facial or
         fingerprint data, is used when logging into online banking?
         """,
         [
