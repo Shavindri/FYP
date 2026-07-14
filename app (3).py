@@ -4,7 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import cv2
+import mediapipe as mp
 
+from PIL import Image
+from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
@@ -921,57 +925,392 @@ elif page == "Cyber Awareness Assessment":
                 "to strengthen any areas identified in your recommendations."
             )
 elif page == "Biometric Training Demo":
+
     st.title("Biometric Facial Identification Training Demonstration")
 
     st.write("""
-    This section explains how biometric facial identification works in a simplified way.
-    It is not a real authentication system and does not store or verify biometric data.
+    This educational demonstration shows how facial identification can work in
+    simplified stages: detecting facial landmarks, converting them into a
+    numerical faceprint, storing the faceprint temporarily, and comparing a
+    second photograph with the stored entry.
     """)
 
-    uploaded_image = st.file_uploader(
-        "Upload a face image for demonstration purposes",
-        type=["jpg", "jpeg", "png"]
+    st.warning("""
+    This is an educational demonstration only. It is not a real banking
+    authentication system and must not be used to verify a person's identity.
+    """)
+
+    mp_face_mesh = mp.solutions.face_mesh
+    mp_drawing = mp.solutions.drawing_utils
+    mp_drawing_styles = mp.solutions.drawing_styles
+
+    def extract_faceprint(uploaded_file):
+
+        image = Image.open(uploaded_file).convert("RGB")
+        image_array = np.array(image)
+
+        with mp_face_mesh.FaceMesh(
+            static_image_mode=True,
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5
+        ) as face_mesh:
+
+            results = face_mesh.process(image_array)
+
+        if not results.multi_face_landmarks:
+            return image_array, None, None
+
+        facial_landmarks = results.multi_face_landmarks[0]
+
+        landmark_image = image_array.copy()
+
+        mp_drawing.draw_landmarks(
+            image=landmark_image,
+            landmark_list=facial_landmarks,
+            connections=mp_face_mesh.FACEMESH_TESSELATION,
+            landmark_drawing_spec=None,
+            connection_drawing_spec=(
+                mp_drawing_styles
+                .get_default_face_mesh_tesselation_style()
+            )
+        )
+
+        mp_drawing.draw_landmarks(
+            image=landmark_image,
+            landmark_list=facial_landmarks,
+            connections=mp_face_mesh.FACEMESH_CONTOURS,
+            landmark_drawing_spec=None,
+            connection_drawing_spec=(
+                mp_drawing_styles
+                .get_default_face_mesh_contours_style()
+            )
+        )
+
+        landmark_coordinates = np.array(
+            [
+                [point.x, point.y, point.z]
+                for point in facial_landmarks.landmark
+            ],
+            dtype=np.float32
+        )
+
+        # Centre the landmarks around their mean position
+        landmark_coordinates = (
+            landmark_coordinates
+            - landmark_coordinates.mean(axis=0)
+        )
+
+        # Normalise the landmarks to reduce image-size effects
+        scale = np.linalg.norm(landmark_coordinates)
+
+        if scale == 0:
+            return image_array, landmark_image, None
+
+        normalised_landmarks = landmark_coordinates / scale
+
+        # Flatten all coordinate values into one numerical faceprint
+        faceprint = normalised_landmarks.flatten()
+
+        return image_array, landmark_image, faceprint
+
+    if "stored_faceprint" not in st.session_state:
+        st.session_state.stored_faceprint = None
+
+    if "stored_face_name" not in st.session_state:
+        st.session_state.stored_face_name = None
+
+    enrol_tab, compare_tab = st.tabs(
+        [
+            "Enrol Reference Face",
+            "Compare New Face"
+        ]
     )
 
-    if uploaded_image is not None:
-        st.image(uploaded_image, caption="Uploaded Image", use_container_width=True)
+    with enrol_tab:
 
-        st.subheader("Step 1: Face Detection")
+        st.subheader("Step 1: Upload a Reference Photograph")
+
+        reference_name = st.text_input(
+            "Enter a participant name or ID",
+            placeholder="Example: Participant 001"
+        )
+
+        reference_image = st.file_uploader(
+            "Upload the reference face image",
+            type=["jpg", "jpeg", "png"],
+            key="reference_face"
+        )
+
+        if reference_image is not None:
+
+            try:
+                original, landmark_result, faceprint = extract_faceprint(
+                    reference_image
+                )
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.markdown("#### Original Photograph")
+                    st.image(
+                        original,
+                        use_container_width=True
+                    )
+
+                if faceprint is None:
+                    st.error(
+                        "A clear face could not be detected. Upload a front-facing "
+                        "photograph with suitable lighting."
+                    )
+
+                else:
+                    with col2:
+                        st.markdown("#### Facial Landmarks")
+                        st.image(
+                            landmark_result,
+                            use_container_width=True
+                        )
+
+                    st.success("Facial landmarks were detected successfully.")
+
+                    st.subheader("Step 2: Convert Landmarks into a Faceprint")
+
+                    metric1, metric2, metric3 = st.columns(3)
+
+                    metric1.metric(
+                        "Landmarks detected",
+                        len(faceprint) // 3
+                    )
+
+                    metric2.metric(
+                        "Coordinates per landmark",
+                        "3"
+                    )
+
+                    metric3.metric(
+                        "Faceprint dimensions",
+                        len(faceprint)
+                    )
+
+                    st.write("""
+                    Each detected landmark contains horizontal, vertical and
+                    depth coordinates. These values are normalised and combined
+                    into one numerical vector called a simplified faceprint.
+                    """)
+
+                    preview_length = min(30, len(faceprint))
+
+                    faceprint_preview = pd.DataFrame(
+                        {
+                            "Faceprint position": range(
+                                1,
+                                preview_length + 1
+                            ),
+                            "Numerical value": faceprint[
+                                :preview_length
+                            ]
+                        }
+                    )
+
+                    st.dataframe(
+                        faceprint_preview,
+                        use_container_width=True,
+                        hide_index=True
+                    )
+
+                    st.caption(
+                        "Only the first 30 numerical values are shown. "
+                        "The complete vector contains all landmark coordinates."
+                    )
+
+                    if st.button(
+                        "Store Reference Faceprint",
+                        type="primary"
+                    ):
+
+                        if not reference_name.strip():
+                            st.error(
+                                "Enter a participant name or ID before storing "
+                                "the faceprint."
+                            )
+
+                        else:
+                            st.session_state.stored_faceprint = faceprint
+                            st.session_state.stored_face_name = (
+                                reference_name.strip()
+                            )
+
+                            st.success(
+                                f"The faceprint for "
+                                f"{st.session_state.stored_face_name} "
+                                "was stored temporarily."
+                            )
+
+            except Exception as error:
+                st.error(
+                    "The reference image could not be processed."
+                )
+                st.caption(f"Technical detail: {error}")
+
+    with compare_tab:
+
+        st.subheader("Step 3: Upload Another Photograph")
+
         st.write("""
-        A biometric system first detects whether a face is present in the image.
+        The second photograph is converted into another faceprint. The new
+        faceprint is then compared with the temporarily stored reference
+        faceprint.
         """)
 
-        st.subheader("Step 2: Facial Landmark Identification")
-        st.write("""
-        The system identifies key facial landmarks such as the eyes, nose, mouth, jawline,
-        and distance between facial features.
-        """)
+        if st.session_state.stored_faceprint is None:
+            st.info(
+                "First enrol and store a reference faceprint using the "
+                "'Enrol Reference Face' tab."
+            )
 
-        st.subheader("Step 3: Faceprint Generation")
-        st.write("""
-        These facial measurements are converted into a mathematical representation known as a faceprint.
-        A faceprint is not the same as a normal image; it is a numerical pattern used for comparison.
-        """)
+        comparison_image = st.file_uploader(
+            "Upload a photograph for comparison",
+            type=["jpg", "jpeg", "png"],
+            key="comparison_face"
+        )
 
-        st.subheader("Step 4: Matching Process")
-        st.write("""
-        In a real authentication system, the generated faceprint would be compared with a stored template
-        to decide whether access should be granted.
-        """)
+        if comparison_image is not None:
 
-        st.warning("""
-        This demonstration is educational only. It does not authenticate users, store biometric data,
-        or perform real facial recognition.
-        """)
+            try:
+                comparison_original, comparison_landmarks, comparison_faceprint = (
+                    extract_faceprint(comparison_image)
+                )
 
-        st.subheader("Privacy and Security Considerations")
-        st.write("""
-        Biometric systems must protect user privacy by securely storing biometric templates,
-        limiting access to sensitive data, and clearly explaining how biometric information is used.
-        """)
+                col1, col2 = st.columns(2)
 
+                with col1:
+                    st.markdown("#### Comparison Photograph")
+                    st.image(
+                        comparison_original,
+                        use_container_width=True
+                    )
 
-elif page == "Learning Resources":
+                if comparison_faceprint is None:
+                    st.error(
+                        "A clear face could not be detected in the comparison image."
+                    )
+
+                else:
+                    with col2:
+                        st.markdown("#### Extracted Landmarks")
+                        st.image(
+                            comparison_landmarks,
+                            use_container_width=True
+                        )
+
+                    if st.session_state.stored_faceprint is not None:
+
+                        similarity = cosine_similarity(
+                            comparison_faceprint.reshape(1, -1),
+                            st.session_state.stored_faceprint.reshape(1, -1)
+                        )[0][0]
+
+                        similarity_percentage = round(
+                            float(similarity) * 100,
+                            2
+                        )
+
+                        st.write("---")
+                        st.subheader("Step 4: Compare with Stored Faceprint")
+
+                        result_col1, result_col2 = st.columns(2)
+
+                        result_col1.metric(
+                            "Similarity Score",
+                            f"{similarity_percentage}%"
+                        )
+
+                        result_col2.metric(
+                            "Stored Reference",
+                            st.session_state.stored_face_name
+                        )
+
+                        matching_threshold = 95
+
+                        if similarity_percentage >= matching_threshold:
+                            st.success(
+                                "Demonstration result: the uploaded face is "
+                                "similar to the stored reference faceprint."
+                            )
+                        else:
+                            st.error(
+                                "Demonstration result: the uploaded face does "
+                                "not meet the selected similarity threshold."
+                            )
+
+                        st.progress(
+                            min(
+                                max(int(similarity_percentage), 0),
+                                100
+                            )
+                        )
+
+                        comparison_table = pd.DataFrame(
+                            {
+                                "Stored Entry": [
+                                    st.session_state.stored_face_name
+                                ],
+                                "Similarity Percentage": [
+                                    similarity_percentage
+                                ],
+                                "Demonstration Threshold": [
+                                    f"{matching_threshold}%"
+                                ]
+                            }
+                        )
+
+                        st.dataframe(
+                            comparison_table,
+                            use_container_width=True,
+                            hide_index=True
+                        )
+
+                        st.caption(
+                            "The 95% threshold is used only to demonstrate how "
+                            "a matching decision can be made. It has not been "
+                            "validated for real biometric authentication."
+                        )
+
+            except Exception as error:
+                st.error(
+                    "The comparison image could not be processed."
+                )
+                st.caption(f"Technical detail: {error}")
+
+    st.write("---")
+    st.subheader("How the Demonstration Works")
+
+    st.write("""
+    1. The system detects a face in the uploaded photograph.
+
+    2. It identifies facial landmarks around the eyes, nose, mouth and face shape.
+
+    3. The landmark coordinates are normalised and converted into a numerical faceprint.
+
+    4. The reference faceprint is stored temporarily in the Streamlit session.
+
+    5. A second faceprint is generated from another photograph.
+
+    6. Cosine similarity compares the two numerical faceprints.
+
+    7. The similarity score is checked against a demonstration threshold.
+    """)
+
+    st.subheader("Privacy and Security Considerations")
+
+    st.write("""
+    Real banking systems require secure biometric templates, encryption,
+    controlled access, tested matching thresholds, liveness detection and
+    protection against photographs, videos and other presentation attacks.
+    This demonstration stores only one simplified faceprint temporarily in
+    session memory and does not create a permanent biometric database.
+    """)elif page == "Learning Resources":
     st.title("Learning Resources")
 
     topic = st.selectbox(
