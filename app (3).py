@@ -163,131 +163,170 @@ elif page == "Dataset Overview":
 elif page == "Exploratory Data Analysis":
 
     st.title("Exploratory Data Analysis")
+    st.write(
+        "Use the filters below to explore demographics, online banking usage, "
+        "cybersecurity awareness, behaviour, and biometric understanding."
+    )
 
     st.subheader("Interactive Filters")
 
     col1, col2, col3 = st.columns(3)
 
+    with col1:
+        age_options = df["Age"].dropna().unique().tolist()
+        age_filter = st.multiselect(
+            "Age",
+            options=age_options,
+            default=age_options
+        )
 
-with col1:
-    age_filter = st.multiselect(
-        "Age",
-        options=df["Age"].unique(),
-        default=df["Age"].unique()
-    )
+    with col2:
+        gender_options = df["Gender"].dropna().unique().tolist()
+        gender_filter = st.multiselect(
+            "Gender",
+            options=gender_options,
+            default=gender_options
+        )
 
-with col2:
-    gender_filter = st.multiselect(
-        "Gender",
-        options=df["Gender"].unique(),
-        default=df["Gender"].unique()
-    )
+    with col3:
+        banking_options = df["Banking_Use"].dropna().unique().tolist()
+        banking_filter = st.multiselect(
+            "Banking Usage",
+            options=banking_options,
+            default=banking_options
+        )
 
-with col3:
-    banking_filter = st.multiselect(
-        "Banking Usage",
-        options=df["Banking_Use"].unique(),
-        default=df["Banking_Use"].unique()
-    )
+    filtered_df = df[
+        df["Age"].isin(age_filter)
+        & df["Gender"].isin(gender_filter)
+        & df["Banking_Use"].isin(banking_filter)
+    ].copy()
 
-filtered_df = df[
-    (df["Age"].isin(age_filter)) &
-    (df["Gender"].isin(gender_filter)) &
-    (df["Banking_Use"].isin(banking_filter))
-]
+    if filtered_df.empty:
+        st.warning("No records match the selected filters. Please change the filters.")
+    else:
+        st.subheader("Dataset Summary")
 
-st.subheader("Dataset Summary")
+        c1, c2, c3, c4 = st.columns(4)
 
-c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Responses", len(filtered_df))
 
-c1.metric("Responses", len(filtered_df))
+        awareness_average = filtered_df["Awareness_Score"].mean()
+        c2.metric(
+            "Average Awareness",
+            f"{awareness_average:.2f}" if pd.notna(awareness_average) else "N/A"
+        )
 
-c2.metric(
-    "Average Awareness",
-    round(filtered_df["Awareness_Score"].mean(),1)
-)
+        c3.metric(
+            "Mobile App Users",
+            int(filtered_df["Platform"].value_counts().get("Mobile App", 0))
+        )
 
-c3.metric(
-    "Mobile App Users",
-    filtered_df["Platform"].value_counts().get("Mobile App",0)
-)
+        c4.metric(
+            "High Awareness",
+            int(filtered_df["Awareness_Level"].value_counts().get("High", 0))
+        )
 
-c4.metric(
-    "High Awareness",
-    filtered_df["Awareness_Level"].value_counts().get("High",0)
-)
-col1, col2 = st.columns(2)
+        st.write("---")
+        st.subheader("Demographic Analysis")
 
-with col1:
-    st.subheader("Age Distribution")
-    st.bar_chart(filtered_df["Age"].value_counts())
+        col1, col2 = st.columns(2)
 
-with col2:
-    st.subheader("Gender Distribution")
-    st.bar_chart(filtered_df["Gender"].value_counts())
-col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### Age Distribution")
+            st.bar_chart(filtered_df["Age"].value_counts())
 
+        with col2:
+            st.markdown("#### Gender Distribution")
+            st.bar_chart(filtered_df["Gender"].value_counts())
 
-with col1:
-    st.subheader("Banking Usage Frequency")
-    st.bar_chart(filtered_df["Banking_Use"].value_counts())
+        st.write("---")
+        st.subheader("Online Banking Usage")
 
-with col2:
-    st.subheader("Platform Usage")
-    st.bar_chart(filtered_df["Platform"].value_counts())
-col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-with col1:
-    st.subheader("Awareness Level")
-    st.bar_chart(filtered_df["Awareness_Level"].value_counts())
+        with col1:
+            st.markdown("#### Banking Usage Frequency")
+            st.bar_chart(filtered_df["Banking_Use"].value_counts())
 
-with col2:
-    st.subheader("Behaviour Level")
-    st.bar_chart(filtered_df["Behaviour_Level"].value_counts())
+        with col2:
+            st.markdown("#### Platform Usage")
+            st.bar_chart(filtered_df["Platform"].value_counts())
 
-col1, col2 = st.columns(2)
+        st.write("---")
+        st.subheader("Cybersecurity Levels")
 
-with col1:
-    st.subheader("Biometric Understanding")
-    st.bar_chart(filtered_df["Biometric_Level"].value_counts())
+        col1, col2 = st.columns(2)
 
-with col2:
-    st.subheader("Biggest Security Concern")
-    st.bar_chart(filtered_df["Biggest_Concern"].value_counts())
+        with col1:
+            st.markdown("#### Awareness Level")
+            st.bar_chart(filtered_df["Awareness_Level"].value_counts())
 
-st.subheader("Correlation Between Scores")
+        with col2:
+            st.markdown("#### Behaviour Level")
+            st.bar_chart(filtered_df["Behaviour_Level"].value_counts())
 
-corr = filtered_df[
-    [
-        "Awareness_Score",
-        "Opinion_Score",
-        "Behaviour_Score",
-        "Biometric_Score"
-    ]
-].corr()
+        st.write("---")
+        st.subheader("Biometric Analysis")
 
-fig, ax = plt.subplots(figsize=(7,5))
-sns.heatmap(
-    corr,
-    annot=True,
-    cmap="Blues",
-    square=True,
-    ax=ax
-)
+        col1, col2 = st.columns(2)
 
-st.pyplot(fig)
-st.subheader("Filtered Dataset")
+        with col1:
+            st.markdown("#### Biometric Understanding")
+            st.bar_chart(filtered_df["Biometric_Level"].value_counts())
 
-st.dataframe(filtered_df, use_container_width=True)
-csv = filtered_df.to_csv(index=False)
+        with col2:
+            st.markdown("#### Biggest Security Concern")
+            st.bar_chart(filtered_df["Biggest_Concern"].value_counts())
 
+        st.write("---")
+        st.subheader("Correlation Between Scores")
 
-st.download_button(
-    "Download Filtered Dataset",
-    csv,
-    file_name="Filtered_Data.csv",
-    mime="text/csv"
-)
+        corr_cols = [
+            "Awareness_Score",
+            "Opinion_Score",
+            "Behaviour_Score",
+            "Biometric_Score"
+        ]
+
+        available_corr_cols = [
+            column for column in corr_cols
+            if column in filtered_df.columns
+        ]
+
+        if len(available_corr_cols) >= 2:
+            corr = filtered_df[available_corr_cols].corr()
+
+            fig, ax = plt.subplots(figsize=(8, 5))
+            sns.heatmap(
+                corr,
+                annot=True,
+                cmap="Blues",
+                square=True,
+                fmt=".2f",
+                ax=ax
+            )
+            ax.set_title("Correlation Matrix")
+            plt.tight_layout()
+            st.pyplot(fig)
+            plt.close(fig)
+        else:
+            st.info("Not enough score columns are available for correlation analysis.")
+
+        st.write("---")
+        st.subheader("Filtered Dataset")
+
+        st.dataframe(filtered_df, use_container_width=True)
+
+        csv = filtered_df.to_csv(index=False).encode("utf-8")
+
+        st.download_button(
+            label="Download Filtered Dataset",
+            data=csv,
+            file_name="Filtered_Data.csv",
+            mime="text/csv"
+        )
+
 
 elif page == "Cyber Awareness Assessment":
     st.title("Cyber Awareness Assessment")
