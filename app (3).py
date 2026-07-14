@@ -299,13 +299,34 @@ elif page == "Exploratory Data Analysis":
 
             fig, ax = plt.subplots(figsize=(5, 3.5))
             sns.heatmap(
-                corr,
-                annot=True,
-                cmap="Blues",
-                square=True,
-                fmt=".2f",
-                ax=ax
+                sns.heatmap(
+                    corr,
+                    annot=True,
+                    cmap="Blues",
+                    fmt=".2f",
+                    square=True,
+                    linewidths=0.5,
+                    cbar=False,
+                    annot_kws={"size": 9},
+                    ax=ax
             )
+                plt.xticks(rotation=20, fontsize=8)
+                plt.yticks(rotation=0, fontsize=8)
+                plt.tight_layout()
+
+                left, center, right = st.columns([1, 2, 1])
+
+                with center:
+                st.pyplot(fig)
+            st.subheader("Correlation Between Scores")
+
+
+
+
+
+
+
+            
             ax.set_title("Correlation Matrix")
             plt.tight_layout()
             st.pyplot(fig)
