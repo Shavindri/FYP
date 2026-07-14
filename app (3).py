@@ -813,7 +813,7 @@ elif page == "Cyber Awareness Assessment":
             )
 
     biometric_protection = st.radio(
-        ""17. Do you understand how your biometric data should be stored and protected?"",
+        "17. Do you understand how your biometric data should be stored and protected?",
         [
             "Strongly Agree",
             "Agree",
