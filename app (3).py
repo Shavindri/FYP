@@ -340,132 +340,591 @@ elif page == "Exploratory Data Analysis":
 
 
 elif page == "Cyber Awareness Assessment":
+
     st.title("Cyber Awareness Assessment")
 
     st.write("""
-    Answer the following questions. The application will calculate your cyber awareness score
-    and provide personalised feedback.
+    Complete the following assessment to evaluate your online banking
+    cybersecurity awareness. Your answers will be used to calculate an
+    awareness percentage and provide personalised recommendations.
     """)
 
+    st.info(
+        "This assessment is educational only and does not collect or store "
+        "banking credentials or personal financial information."
+    )
+
     score = 0
-    total = 8
+    total_score = 0
     feedback = []
 
-    phishing = st.selectbox(
-        "1. What would you do if you received an email claiming your bank account will be suspended unless you click a link?",
+    st.write("---")
+    st.subheader("Section 1: Cybersecurity Knowledge")
+
+    phishing_awareness = st.radio(
+        "1. Can you recognise phishing emails pretending to be from a bank?",
         [
-            "Verify the request using the bank's official website or customer service",
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if phishing_awareness is not None:
+        total_score += 2
+
+        if phishing_awareness == "Strongly Agree":
+            score += 2
+        elif phishing_awareness == "Agree":
+            score += 1.5
+        elif phishing_awareness == "Neutral":
+            score += 1
+            feedback.append(
+                "Learn common phishing warning signs such as suspicious links, "
+                "urgent language and unusual sender addresses."
+            )
+        else:
+            feedback.append(
+                "Improve your ability to recognise phishing emails before "
+                "responding or clicking links."
+            )
+
+    otp_awareness = st.radio(
+        "2. Do you know that legitimate banks never ask customers to share OTPs, passwords or PINs?",
+        [
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if otp_awareness is not None:
+        total_score += 2
+
+        if otp_awareness == "Strongly Agree":
+            score += 2
+        elif otp_awareness == "Agree":
+            score += 1.5
+        elif otp_awareness == "Neutral":
+            score += 1
+            feedback.append(
+                "Remember that OTPs, passwords and PINs must never be shared."
+            )
+        else:
+            feedback.append(
+                "Banks will not ask you to reveal OTPs, passwords or PINs."
+            )
+
+    mfa_awareness = st.radio(
+        "3. Do you understand how Multi-Factor Authentication protects an online banking account?",
+        [
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if mfa_awareness is not None:
+        total_score += 2
+
+        if mfa_awareness == "Strongly Agree":
+            score += 2
+        elif mfa_awareness == "Agree":
+            score += 1.5
+        elif mfa_awareness == "Neutral":
+            score += 1
+            feedback.append(
+                "Learn how MFA adds another verification step beyond a password."
+            )
+        else:
+            feedback.append(
+                "Improve your understanding of Multi-Factor Authentication."
+            )
+
+    website_awareness = st.radio(
+        "4. Do you know how to verify that a banking website is genuine?",
+        [
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if website_awareness is not None:
+        total_score += 2
+
+        if website_awareness == "Strongly Agree":
+            score += 2
+        elif website_awareness == "Agree":
+            score += 1.5
+        elif website_awareness == "Neutral":
+            score += 1
+            feedback.append(
+                "Check the website address carefully and access banking services "
+                "through the official website or application."
+            )
+        else:
+            feedback.append(
+                "Learn how to verify a banking website before entering login details."
+            )
+
+    public_wifi_awareness = st.radio(
+        "5. Do you understand the risks of using public Wi-Fi for online banking?",
+        [
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if public_wifi_awareness is not None:
+        total_score += 2
+
+        if public_wifi_awareness == "Strongly Agree":
+            score += 2
+        elif public_wifi_awareness == "Agree":
+            score += 1.5
+        elif public_wifi_awareness == "Neutral":
+            score += 1
+            feedback.append(
+                "Avoid accessing online banking through unsecured public Wi-Fi."
+            )
+        else:
+            feedback.append(
+                "Public Wi-Fi may expose sensitive banking information."
+            )
+
+    ai_awareness = st.radio(
+        "6. Are you aware of AI-generated scams and deepfake fraud targeting banking customers?",
+        [
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if ai_awareness is not None:
+        total_score += 2
+
+        if ai_awareness == "Strongly Agree":
+            score += 2
+        elif ai_awareness == "Agree":
+            score += 1.5
+        elif ai_awareness == "Neutral":
+            score += 1
+            feedback.append(
+                "Learn how criminals may use artificial voices, videos and "
+                "messages to impersonate trusted people."
+            )
+        else:
+            feedback.append(
+                "Improve your awareness of AI-generated scams and deepfake fraud."
+            )
+
+    compromised_account = st.radio(
+        "7. Do you know what actions to take if your online banking account may have been compromised?",
+        [
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if compromised_account is not None:
+        total_score += 2
+
+        if compromised_account == "Strongly Agree":
+            score += 2
+        elif compromised_account == "Agree":
+            score += 1.5
+        elif compromised_account == "Neutral":
+            score += 1
+            feedback.append(
+                "If you suspect fraud, change your password and contact your bank immediately."
+            )
+        else:
+            feedback.append(
+                "Learn the correct response to a potentially compromised account."
+            )
+
+    st.write("---")
+    st.subheader("Section 2: Practical Security Scenarios")
+
+    phishing_scenario = st.radio(
+        """
+        8. You receive an email stating that your bank account will be
+        suspended unless you click a link immediately. What would you do?
+        """,
+        [
+            "Click the link immediately",
             "Ignore it completely",
-            "Click the link immediately"
-        ]
+            "Verify the request using the bank's official website or customer service",
+            "Reply to the email"
+        ],
+        index=None
     )
 
-    if phishing == "Verify the request using the bank's official website or customer service":
-        score += 1
-    else:
-        feedback.append("Improve phishing awareness by verifying suspicious emails through official bank channels.")
+    if phishing_scenario is not None:
+        total_score += 2
 
-    otp = st.selectbox(
-        "2. What would you do if someone claiming to be from your bank asks for your OTP?",
+        if phishing_scenario == (
+            "Verify the request using the bank's official website or customer service"
+        ):
+            score += 2
+        elif phishing_scenario == "Ignore it completely":
+            score += 1
+            feedback.append(
+                "Ignoring the email avoids immediate danger, but you should also "
+                "verify and report suspicious messages."
+            )
+        else:
+            feedback.append(
+                "Never click or reply to an urgent banking email without verification."
+            )
+
+    otp_scenario = st.radio(
+        """
+        9. Someone claiming to be from your bank asks for your OTP.
+        What would you do?
+        """,
         [
-            "End the call and contact the bank through official channels",
+            "Share the OTP",
             "Ask why it is needed",
-            "Ignore the request but continue the conversation",
-            "Share the OTP"
-        ]
+            "End the call and contact the bank through official channels",
+            "Ignore the request but continue the conversation"
+        ],
+        index=None
     )
 
-    if otp == "End the call and contact the bank through official channels":
-        score += 1
-    else:
-        feedback.append("Never share OTPs. Banks will not ask customers to share OTPs, passwords, or PINs.")
+    if otp_scenario is not None:
+        total_score += 2
 
-    password = st.selectbox(
-        "3. How often do you use a unique password for online banking?",
-        ["Always", "Sometimes", "Rarely", "Never"]
-    )
+        if otp_scenario == (
+            "End the call and contact the bank through official channels"
+        ):
+            score += 2
+        elif otp_scenario == "Ask why it is needed":
+            score += 0.5
+            feedback.append(
+                "Do not continue discussing an OTP request. End the interaction "
+                "and contact the bank independently."
+            )
+        else:
+            feedback.append(
+                "Never share an OTP or continue a suspicious banking conversation."
+            )
 
-    if password == "Always":
-        score += 1
-    else:
-        feedback.append("Improve password practices by using a strong and unique password for online banking.")
-
-    mfa = st.selectbox(
-        "4. How often do you enable Multi-Factor Authentication when it is available?",
-        ["Always", "Sometimes", "Rarely", "Never"]
-    )
-
-    if mfa == "Always":
-        score += 1
-    else:
-        feedback.append("Enable Multi-Factor Authentication to add an extra layer of protection.")
-
-    website = st.selectbox(
-        "5. How often do you verify the banking website before entering login details?",
-        ["Always", "Sometimes", "Rarely", "Never"]
-    )
-
-    if website == "Always":
-        score += 1
-    else:
-        feedback.append("Always check website authenticity before entering banking credentials.")
-
-    public_wifi = st.selectbox(
-        "6. Would you use public Wi-Fi for online banking?",
-        ["Never", "Sometimes", "Often"]
-    )
-
-    if public_wifi == "Never":
-        score += 1
-    else:
-        feedback.append("Avoid public Wi-Fi for online banking because it may expose sensitive information.")
-
-    biometric = st.selectbox(
-        "7. Do you understand how biometric authentication protects online banking accounts?",
-        ["Yes", "Somewhat", "No"]
-    )
-
-    if biometric == "Yes":
-        score += 1
-    else:
-        feedback.append("Improve understanding of biometric authentication and how biometric data is protected.")
-
-    ai_scams = st.selectbox(
-        "8. What would you do if you received a voice call that sounded like your bank manager asking you to approve a transaction?",
+    login_alert_scenario = st.radio(
+        """
+        10. You receive a security alert saying that someone logged into
+        your account from another device. What is your first action?
+        """,
         [
-            "Verify the request using the bank's official contact details",
-            "End the call without checking",
-            "Approve the transaction"
-        ]
+            "Ignore it",
+            "Change your password immediately and contact the bank",
+            "Wait to see if it happens again",
+            "Delete the notification"
+        ],
+        index=None
     )
 
-    if ai_scams == "Verify the request using the bank's official contact details":
-        score += 1
-    else:
-        feedback.append("Be cautious of AI-generated scams and deepfake calls. Always verify urgent requests officially.")
+    if login_alert_scenario is not None:
+        total_score += 2
 
-    if st.button("Calculate Awareness Score"):
-        percentage = round((score / total) * 100, 2)
-
-        st.subheader("Your Cyber Awareness Score")
-        st.write(f"{percentage}%")
-
-        if percentage >= 75:
-            st.success("Awareness Level: High")
-        elif percentage >= 50:
-            st.warning("Awareness Level: Moderate")
+        if login_alert_scenario == (
+            "Change your password immediately and contact the bank"
+        ):
+            score += 2
         else:
-            st.error("Awareness Level: Low")
+            feedback.append(
+                "Act immediately on an unauthorised login alert by securing the "
+                "account and contacting the bank."
+            )
 
-        st.subheader("Personalised Feedback")
+    deepfake_scenario = st.radio(
+        """
+        11. You receive a voice call that sounds like your bank manager
+        asking you to urgently approve a transaction. What would you do?
+        """,
+        [
+            "Approve the transaction",
+            "Verify the request using the bank's official contact details",
+            "Share your banking details",
+            "End the call without checking"
+        ],
+        index=None
+    )
 
-        if feedback:
-            for item in feedback:
-                st.write("- " + item)
+    if deepfake_scenario is not None:
+        total_score += 2
+
+        if deepfake_scenario == (
+            "Verify the request using the bank's official contact details"
+        ):
+            score += 2
+        elif deepfake_scenario == "End the call without checking":
+            score += 1
+            feedback.append(
+                "Ending the call is safer, but the request should also be verified "
+                "through official bank contact details."
+            )
         else:
-            st.write("You demonstrated strong cyber awareness across all assessed areas.")
+            feedback.append(
+                "Voice calls can be imitated using AI. Verify every urgent request independently."
+            )
 
+    st.write("---")
+    st.subheader("Section 3: Online Banking Security Behaviour")
 
+    unique_password = st.radio(
+        "12. How often do you use a unique password for online banking?",
+        ["Never", "Rarely", "Sometimes", "Always"],
+        index=None
+    )
+
+    if unique_password is not None:
+        total_score += 2
+
+        if unique_password == "Always":
+            score += 2
+        elif unique_password == "Sometimes":
+            score += 1
+            feedback.append(
+                "Use a unique password for online banking every time."
+            )
+        else:
+            feedback.append(
+                "Avoid reusing your online banking password on other accounts."
+            )
+
+    use_mfa = st.radio(
+        "13. How often do you enable Multi-Factor Authentication when available?",
+        ["Never", "Rarely", "Sometimes", "Always"],
+        index=None
+    )
+
+    if use_mfa is not None:
+        total_score += 2
+
+        if use_mfa == "Always":
+            score += 2
+        elif use_mfa == "Sometimes":
+            score += 1
+            feedback.append(
+                "Enable MFA whenever your bank provides the option."
+            )
+        else:
+            feedback.append(
+                "Multi-Factor Authentication adds important protection to your account."
+            )
+
+    update_application = st.radio(
+        "14. How often do you update your banking application?",
+        ["Never", "Rarely", "Sometimes", "Always"],
+        index=None
+    )
+
+    if update_application is not None:
+        total_score += 2
+
+        if update_application == "Always":
+            score += 2
+        elif update_application == "Sometimes":
+            score += 1
+            feedback.append(
+                "Install banking application updates promptly."
+            )
+        else:
+            feedback.append(
+                "Outdated banking applications may contain unresolved security weaknesses."
+            )
+
+    verify_website = st.radio(
+        "15. How often do you verify website authenticity before entering banking credentials?",
+        ["Never", "Rarely", "Sometimes", "Always"],
+        index=None
+    )
+
+    if verify_website is not None:
+        total_score += 2
+
+        if verify_website == "Always":
+            score += 2
+        elif verify_website == "Sometimes":
+            score += 1
+            feedback.append(
+                "Verify the banking website every time before entering credentials."
+            )
+        else:
+            feedback.append(
+                "Always confirm that you are using your bank's official website."
+            )
+
+    st.write("---")
+    st.subheader("Section 4: Biometric Authentication Awareness")
+
+    biometric_understanding = st.radio(
+        """
+        16. Do you understand what biometric data, such as facial or
+        fingerprint data, is used when logging into online banking?
+        """,
+        [
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if biometric_understanding is not None:
+        total_score += 2
+
+        if biometric_understanding == "Strongly Agree":
+            score += 2
+        elif biometric_understanding == "Agree":
+            score += 1.5
+        elif biometric_understanding == "Neutral":
+            score += 1
+            feedback.append(
+                "Learn how biometric features are converted into digital templates."
+            )
+        else:
+            feedback.append(
+                "Improve your understanding of how biometric authentication works."
+            )
+
+    biometric_protection = st.radio(
+        "17. Do you understand how your biometric data should be stored and protected?",
+        [
+            "Strongly Agree",
+            "Agree",
+            "Neutral",
+            "Disagree",
+            "Strongly Disagree"
+        ],
+        index=None
+    )
+
+    if biometric_protection is not None:
+        total_score += 2
+
+        if biometric_protection == "Strongly Agree":
+            score += 2
+        elif biometric_protection == "Agree":
+            score += 1.5
+        elif biometric_protection == "Neutral":
+            score += 1
+            feedback.append(
+                "Review how banks protect biometric templates and sensitive information."
+            )
+        else:
+            feedback.append(
+                "Learn more about biometric privacy, storage and data protection."
+            )
+
+    st.write("---")
+
+    answered_questions = int(total_score / 2)
+    required_questions = 17
+
+    st.caption(
+        f"Questions answered: {answered_questions} of {required_questions}"
+    )
+
+    if st.button("Calculate Awareness Score", type="primary"):
+
+        if answered_questions < required_questions:
+            st.error(
+                "Please answer all 17 questions before calculating your score."
+            )
+
+        else:
+            percentage = round((score / total_score) * 100, 1)
+
+            st.write("---")
+            st.subheader("Your Assessment Results")
+
+            result_col1, result_col2 = st.columns(2)
+
+            with result_col1:
+                st.metric(
+                    "Cyber Awareness Score",
+                    f"{percentage}%"
+                )
+
+            with result_col2:
+                if percentage >= 80:
+                    awareness_level = "High"
+                elif percentage >= 60:
+                    awareness_level = "Moderate"
+                else:
+                    awareness_level = "Low"
+
+                st.metric(
+                    "Awareness Level",
+                    awareness_level
+                )
+
+            st.progress(int(percentage))
+
+            if percentage >= 80:
+                st.success(
+                    "You demonstrated a high level of online banking cybersecurity awareness."
+                )
+
+            elif percentage >= 60:
+                st.warning(
+                    "You demonstrated a moderate level of awareness, but some areas require improvement."
+                )
+
+            else:
+                st.error(
+                    "Your results indicate that further cybersecurity awareness training is recommended."
+                )
+
+            st.subheader("Personalised Recommendations")
+
+            if feedback:
+                unique_feedback = list(dict.fromkeys(feedback))
+
+                for number, recommendation in enumerate(
+                    unique_feedback,
+                    start=1
+                ):
+                    st.write(f"{number}. {recommendation}")
+
+            else:
+                st.success(
+                    "You demonstrated strong knowledge and safe behaviour across all assessed areas."
+                )
+
+            st.info(
+                "Use the Learning Resources and Biometric Training Demo pages "
+                "to strengthen any areas identified in your recommendations."
+            )
 elif page == "Biometric Training Demo":
     st.title("Biometric Facial Identification Training Demonstration")
 
