@@ -1310,7 +1310,10 @@ elif page == "Biometric Training Demo":
     protection against photographs, videos and other presentation attacks.
     This demonstration stores only one simplified faceprint temporarily in
     session memory and does not create a permanent biometric database.
-    """)elif page == "Learning Resources":
+    """)
+
+
+elif page == "Learning Resources":
     st.title("Learning Resources")
 
     topic = st.selectbox(
