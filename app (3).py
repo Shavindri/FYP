@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-import cv2
 import mediapipe as mp
 
 from PIL import Image
