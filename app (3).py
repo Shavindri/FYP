@@ -297,7 +297,7 @@ elif page == "Exploratory Data Analysis":
         if len(available_corr_cols) >= 2:
             corr = filtered_df[available_corr_cols].corr()
 
-            fig, ax = plt.subplots(figsize=(8, 5))
+            fig, ax = plt.subplots(figsize=(5, 3.5))
             sns.heatmap(
                 corr,
                 annot=True,
