@@ -1466,8 +1466,7 @@ elif page == "Learning Resources":
 
             awareness_level = "Very Low Awareness"
 
-            message = """
-            Your result indicates that you currently have limited knowledge
+            message = """Your result indicates that you currently have limited knowledge
             of online banking cybersecurity. Complete all recommended modules
             in the suggested order.
             """
@@ -1485,8 +1484,7 @@ elif page == "Learning Resources":
 
             awareness_level = "Low Awareness"
 
-            message = """
-            You understand some basic cybersecurity concepts, but several
+            message = """You understand some basic cybersecurity concepts, but several
             important areas still require improvement.
             """
 
@@ -1502,8 +1500,7 @@ elif page == "Learning Resources":
 
             awareness_level = "Moderate Awareness"
 
-            message = """
-            You demonstrate a reasonable understanding of online banking
+            message = """You demonstrate a reasonable understanding of online banking
             security. The following modules will strengthen your knowledge.
             """
 
@@ -1519,8 +1516,7 @@ elif page == "Learning Resources":
 
             awareness_level = "Good Awareness"
 
-            message = """
-            You already follow many secure online banking practices.
+            message = """You already follow many secure online banking practices.
             Focus on advanced and emerging cybersecurity threats.
             """
 
@@ -1535,8 +1531,7 @@ elif page == "Learning Resources":
 
             awareness_level = "High Awareness"
 
-            message = """
-            You demonstrate a high level of cybersecurity awareness.
+            message = """You demonstrate a high level of cybersecurity awareness.
             Continue reviewing advanced security practices and emerging threats.
             """
 
@@ -1692,8 +1687,7 @@ elif page == "Learning Resources":
             """)
 
             phishing_question = st.radio(
-                """
-                You receive an email saying your bank account will be suspended
+                """You receive an email saying your bank account will be suspended
                 unless you click a link. What should you do?
                 """,
                 [
@@ -1759,8 +1753,7 @@ elif page == "Learning Resources":
             """)
 
             mfa_question = st.radio(
-                """
-                Someone claiming to be from your bank asks for your OTP.
+                """Someone claiming to be from your bank asks for your OTP.
                 What should you do?
                 """,
                 [
@@ -1826,8 +1819,7 @@ elif page == "Learning Resources":
             """)
 
             safe_question = st.radio(
-                """
-                You receive an alert showing an unfamiliar login to your account.
+                """ You receive an alert showing an unfamiliar login to your account.
                 What should you do first?
                 """,
                 [
@@ -1900,8 +1892,7 @@ elif page == "Learning Resources":
             """)
 
             biometric_question = st.radio(
-                """
-                What should a secure biometric system protect?
+                """What should a secure biometric system protect?
                 """,
                 [
                     "Only the screen colour",
@@ -1968,8 +1959,7 @@ elif page == "Learning Resources":
             """)
 
             ai_question = st.radio(
-                """
-                A caller sounds exactly like your bank manager and asks you to
+                """A caller sounds exactly like your bank manager and asks you to
                 approve an urgent transfer. What should you do?
                 """,
                 [
@@ -2038,8 +2028,7 @@ elif page == "Learning Resources":
             """)
 
             threat_question = st.radio(
-                """
-                Which action reduces the risk of credential stuffing?
+                """Which action reduces the risk of credential stuffing?
                 """,
                 [
                     "Reuse the same password everywhere",
@@ -2101,8 +2090,7 @@ elif page == "Learning Resources":
             """)
 
             advanced_question = st.radio(
-                """
-                What should you do when you receive an unexpected MFA approval request?
+                """What should you do when you receive an unexpected MFA approval request?
                 """,
                 [
                     "Approve it to stop the notifications",
@@ -2138,8 +2126,7 @@ elif page == "Learning Resources":
 
         if score_range == "0–20%":
 
-            st.write("""
-            After completing all recommended modules, the user should be able to
+            st.write("""After completing all recommended modules, the user should be able to
             recognise basic cyber threats, protect passwords and OTPs, respond to
             suspicious messages and adopt safer online banking behaviour.
             """)
@@ -2154,24 +2141,21 @@ elif page == "Learning Resources":
 
         elif score_range == "41–60%":
 
-            st.write("""
-            After completing the recommended modules, the user should develop a
+            st.write("""After completing the recommended modules, the user should develop a
             stronger understanding of biometric security, AI-enabled fraud and
             emerging online banking threats.
             """)
 
         elif score_range == "61–80%":
 
-            st.write("""
-            After completing the recommended modules, the user should improve
+            st.write("""After completing the recommended modules, the user should improve
             their knowledge of advanced authentication, biometric privacy and
             emerging cyber threats.
             """)
 
         else:
 
-            st.write("""
-            After completing the recommended modules, the user should maintain
+            st.write("""After completing the recommended modules, the user should maintain
             high cybersecurity awareness and remain informed about evolving
             threats and advanced security practices.
             """)
