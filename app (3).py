@@ -4,8 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-import boto3
-
+import streamlit.components.v1 as components
 
 from io import BytesIO
 from PIL import Image, ImageDraw
@@ -925,306 +924,505 @@ elif page == "Cyber Awareness Assessment":
                 "Use the Learning Resources and Biometric Training Demo pages "
                 "to strengthen any areas identified in your recommendations."
             )
+
 elif page == "Biometric Training Demo":
 
     st.title("Biometric Facial Identification Training Demonstration")
 
     st.write("""
-    This educational demonstration automatically detects faces and facial
-    landmarks in an uploaded photograph. It shows how a facial identification
-    system first locates a face before extracting important facial points.
+    This educational demonstration automatically detects whether a face is
+    present in an uploaded photograph and displays facial landmarks around
+    important facial features.
     """)
 
     st.warning("""
-    This demonstration detects facial features only. It does not identify the
-    person, create a faceprint database or perform banking authentication.
+    This demonstration performs face and landmark detection only. It does not
+    identify the person, store biometric data or perform banking authentication.
     """)
 
-    uploaded_image = st.file_uploader(
-        "Upload a face photograph",
-        type=["jpg", "jpeg", "png"],
-        key="automatic_face_detection"
+    biometric_html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 10px;
+                background-color: transparent;
+            }
+
+            .upload-box {
+                border: 2px dashed #999;
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            input[type="file"] {
+                margin: 10px;
+            }
+
+            #status {
+                margin: 15px 0;
+                padding: 12px;
+                border-radius: 8px;
+                font-weight: bold;
+            }
+
+            .loading {
+                background-color: #e8f1ff;
+                color: #174ea6;
+            }
+
+            .success {
+                background-color: #e7f7ed;
+                color: #137333;
+            }
+
+            .error {
+                background-color: #fce8e6;
+                color: #c5221f;
+            }
+
+            .image-container {
+                position: relative;
+                display: inline-block;
+                max-width: 100%;
+            }
+
+            #uploadedImage {
+                display: none;
+                max-width: 100%;
+                max-height: 600px;
+                border-radius: 8px;
+            }
+
+            #outputCanvas {
+                display: none;
+                max-width: 100%;
+                max-height: 600px;
+                border-radius: 8px;
+            }
+
+            .results {
+                margin-top: 20px;
+                display: none;
+            }
+
+            .metric-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+                margin-top: 15px;
+            }
+
+            .metric {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 12px;
+                text-align: center;
+            }
+
+            .metric-value {
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .metric-label {
+                font-size: 13px;
+                color: #555;
+            }
+
+            @media (max-width: 700px) {
+                .metric-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="upload-box">
+            <h3>Upload a Photograph</h3>
+
+            <p>
+                Select a clear JPG or PNG image containing a front-facing face.
+            </p>
+
+            <input
+                type="file"
+                id="imageUpload"
+                accept="image/jpeg,image/png"
+            >
+        </div>
+
+        <div id="status" class="loading">
+            Loading facial landmark detection model...
+        </div>
+
+        <div class="image-container">
+            <img id="uploadedImage">
+            <canvas id="outputCanvas"></canvas>
+        </div>
+
+        <div id="results" class="results">
+
+            <h3>Detection Results</h3>
+
+            <div class="metric-grid">
+
+                <div class="metric">
+                    <div id="faceCount" class="metric-value">0</div>
+                    <div class="metric-label">Faces Detected</div>
+                </div>
+
+                <div class="metric">
+                    <div id="landmarkCount" class="metric-value">0</div>
+                    <div class="metric-label">Landmarks Detected</div>
+                </div>
+
+                <div class="metric">
+                    <div id="detectionResult" class="metric-value">No</div>
+                    <div class="metric-label">Face Present</div>
+                </div>
+
+            </div>
+
+            <h3>How Detection Works</h3>
+
+            <ol>
+                <li>The photograph is loaded into the browser.</li>
+                <li>The facial landmark model examines the image.</li>
+                <li>The model checks whether a face is present.</li>
+                <li>Facial landmark coordinates are generated.</li>
+                <li>The detected landmarks are drawn over the photograph.</li>
+            </ol>
+
+            <p>
+                In a complete biometric authentication system, these facial
+                characteristics may be processed further to generate a protected
+                biometric template or face embedding.
+            </p>
+
+        </div>
+
+        <script type="module">
+
+            import {
+                FaceLandmarker,
+                FilesetResolver,
+                DrawingUtils
+            } from
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
+
+            const statusBox =
+                document.getElementById("status");
+
+            const uploadInput =
+                document.getElementById("imageUpload");
+
+            const imageElement =
+                document.getElementById("uploadedImage");
+
+            const canvas =
+                document.getElementById("outputCanvas");
+
+            const canvasContext =
+                canvas.getContext("2d");
+
+            const resultsSection =
+                document.getElementById("results");
+
+            const faceCount =
+                document.getElementById("faceCount");
+
+            const landmarkCount =
+                document.getElementById("landmarkCount");
+
+            const detectionResult =
+                document.getElementById("detectionResult");
+
+            let faceLandmarker;
+
+            async function initialiseFaceLandmarker() {
+
+                try {
+
+                    const vision =
+                        await FilesetResolver.forVisionTasks(
+                            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+                        );
+
+                    faceLandmarker =
+                        await FaceLandmarker.createFromOptions(
+                            vision,
+                            {
+                                baseOptions: {
+                                    modelAssetPath:
+                                        "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
+                                    delegate: "GPU"
+                                },
+
+                                runningMode: "IMAGE",
+
+                                numFaces: 5,
+
+                                minFaceDetectionConfidence: 0.5,
+
+                                minFacePresenceConfidence: 0.5,
+
+                                minTrackingConfidence: 0.5
+                            }
+                        );
+
+                    statusBox.className = "success";
+
+                    statusBox.textContent =
+                        "The face detection model is ready. Upload a photograph.";
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    statusBox.className = "error";
+
+                    statusBox.textContent =
+                        "The facial detection model could not be loaded. Refresh the page and try again.";
+                }
+            }
+
+            uploadInput.addEventListener(
+                "change",
+                function(event) {
+
+                    const selectedFile =
+                        event.target.files[0];
+
+                    if (!selectedFile) {
+                        return;
+                    }
+
+                    if (!faceLandmarker) {
+
+                        statusBox.className = "error";
+
+                        statusBox.textContent =
+                            "The model is still loading. Wait a moment and try again.";
+
+                        return;
+                    }
+
+                    const fileReader =
+                        new FileReader();
+
+                    fileReader.onload =
+                        function(loadEvent) {
+
+                            imageElement.onload =
+                                function() {
+
+                                    detectFace();
+                                };
+
+                            imageElement.src =
+                                loadEvent.target.result;
+                        };
+
+                    fileReader.readAsDataURL(
+                        selectedFile
+                    );
+                }
+            );
+
+            function detectFace() {
+
+                statusBox.className = "loading";
+
+                statusBox.textContent =
+                    "Analysing the photograph...";
+
+                const detection =
+                    faceLandmarker.detect(
+                        imageElement
+                    );
+
+                canvas.width =
+                    imageElement.naturalWidth;
+
+                canvas.height =
+                    imageElement.naturalHeight;
+
+                canvasContext.clearRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+                canvasContext.drawImage(
+                    imageElement,
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+                const detectedLandmarks =
+                    detection.faceLandmarks || [];
+
+                resultsSection.style.display =
+                    "block";
+
+                if (detectedLandmarks.length === 0) {
+
+                    canvas.style.display =
+                        "none";
+
+                    imageElement.style.display =
+                        "block";
+
+                    statusBox.className =
+                        "error";
+
+                    statusBox.textContent =
+                        "No face was detected in the uploaded photograph.";
+
+                    faceCount.textContent =
+                        "0";
+
+                    landmarkCount.textContent =
+                        "0";
+
+                    detectionResult.textContent =
+                        "No";
+
+                    return;
+                }
+
+                const drawingUtils =
+                    new DrawingUtils(
+                        canvasContext
+                    );
+
+                for (
+                    const landmarks of detectedLandmarks
+                ) {
+
+                    drawingUtils.drawConnectors(
+                        landmarks,
+                        FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+                        {
+                            color: "#C0C0C070",
+                            lineWidth: 1
+                        }
+                    );
+
+                    drawingUtils.drawConnectors(
+                        landmarks,
+                        FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+                        {
+                            color: "#FF3030",
+                            lineWidth: 2
+                        }
+                    );
+
+                    drawingUtils.drawConnectors(
+                        landmarks,
+                        FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+                        {
+                            color: "#30FF30",
+                            lineWidth: 2
+                        }
+                    );
+
+                    drawingUtils.drawConnectors(
+                        landmarks,
+                        FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+                        {
+                            color: "#E0E0E0",
+                            lineWidth: 2
+                        }
+                    );
+
+                    drawingUtils.drawConnectors(
+                        landmarks,
+                        FaceLandmarker.FACE_LANDMARKS_LIPS,
+                        {
+                            color: "#E030E0",
+                            lineWidth: 2
+                        }
+                    );
+                }
+
+                imageElement.style.display =
+                    "none";
+
+                canvas.style.display =
+                    "block";
+
+                statusBox.className =
+                    "success";
+
+                statusBox.textContent =
+                    detectedLandmarks.length +
+                    " face(s) detected successfully.";
+
+                faceCount.textContent =
+                    detectedLandmarks.length;
+
+                landmarkCount.textContent =
+                    detectedLandmarks.reduce(
+                        function(total, landmarks) {
+                            return total + landmarks.length;
+                        },
+                        0
+                    );
+
+                detectionResult.textContent =
+                    "Yes";
+            }
+
+            initialiseFaceLandmarker();
+
+        </script>
+
+    </body>
+    </html>
+    """
+
+    components.html(
+        biometric_html,
+        height=1100,
+        scrolling=True
     )
 
-    if uploaded_image is not None:
+    st.write("---")
 
-        try:
-            # Read the uploaded file
-            image_bytes = uploaded_image.getvalue()
+    st.subheader("Academic Limitation")
 
-            # Open image using Pillow
-            original_image = Image.open(
-                BytesIO(image_bytes)
-            ).convert("RGB")
+    st.write("""
+    This demonstration detects faces and facial landmarks but does not perform
+    facial identification. Facial identification would require the detected
+    features to be converted into a secure biometric embedding and compared
+    against an enrolled reference template.
 
-            # Create AWS Rekognition client
-            rekognition_client = boto3.client(
-                "rekognition",
-                region_name=st.secrets["aws"]["region"],
-                aws_access_key_id=st.secrets["aws"]["access_key_id"],
-                aws_secret_access_key=st.secrets["aws"]["secret_access_key"]
-            )
+    This page intentionally stops at landmark detection because no biometric
+    database is used in this research prototype.
+    """)
 
-            # Detect faces and landmarks
-            response = rekognition_client.detect_faces(
-                Image={
-                    "Bytes": image_bytes
-                },
-                Attributes=["ALL"]
-            )
+    st.subheader("Privacy Considerations")
 
-            detected_faces = response.get(
-                "FaceDetails",
-                []
-            )
+    st.write("""
+    The browser processes the selected photograph for the visual demonstration.
+    The application does not add the photograph to the research dataset and does
+    not associate the face with a banking account.
+    """)
 
-            if len(detected_faces) == 0:
-
-                st.image(
-                    original_image,
-                    caption="Uploaded Photograph",
-                    use_container_width=True
-                )
-
-                st.error(
-                    "No face was detected in the uploaded photograph."
-                )
-
-                st.info("""
-                Upload a clearer front-facing photograph with suitable lighting.
-                Ensure that the face is visible and is not heavily covered,
-                blurred or too far from the camera.
-                """)
-
-            else:
-
-                marked_image = original_image.copy()
-                drawing = ImageDraw.Draw(marked_image)
-
-                image_width, image_height = marked_image.size
-
-                for face_number, face_detail in enumerate(
-                    detected_faces,
-                    start=1
-                ):
-
-                    bounding_box = face_detail["BoundingBox"]
-
-                    left = int(
-                        bounding_box["Left"] * image_width
-                    )
-
-                    top = int(
-                        bounding_box["Top"] * image_height
-                    )
-
-                    width = int(
-                        bounding_box["Width"] * image_width
-                    )
-
-                    height = int(
-                        bounding_box["Height"] * image_height
-                    )
-
-                    right = left + width
-                    bottom = top + height
-
-                    # Draw face bounding box
-                    drawing.rectangle(
-                        [left, top, right, bottom],
-                        outline="lime",
-                        width=max(
-                            3,
-                            int(image_width * 0.005)
-                        )
-                    )
-
-                    drawing.text(
-                        (left, max(0, top - 20)),
-                        f"Face {face_number}",
-                        fill="lime"
-                    )
-
-                    # Draw detected facial landmarks
-                    for landmark in face_detail.get(
-                        "Landmarks",
-                        []
-                    ):
-
-                        landmark_x = int(
-                            landmark["X"] * image_width
-                        )
-
-                        landmark_y = int(
-                            landmark["Y"] * image_height
-                        )
-
-                        radius = max(
-                            3,
-                            int(
-                                min(
-                                    image_width,
-                                    image_height
-                                ) * 0.006
-                            )
-                        )
-
-                        drawing.ellipse(
-                            [
-                                landmark_x - radius,
-                                landmark_y - radius,
-                                landmark_x + radius,
-                                landmark_y + radius
-                            ],
-                            fill="red",
-                            outline="white"
-                        )
-
-                st.success(
-                    f"{len(detected_faces)} face(s) detected successfully."
-                )
-
-                image_col1, image_col2 = st.columns(2)
-
-                with image_col1:
-
-                    st.subheader("Original Photograph")
-
-                    st.image(
-                        original_image,
-                        use_container_width=True
-                    )
-
-                with image_col2:
-
-                    st.subheader(
-                        "Automatically Detected Face and Landmarks"
-                    )
-
-                    st.image(
-                        marked_image,
-                        use_container_width=True
-                    )
-
-                st.write("---")
-                st.subheader("Detection Results")
-
-                results = []
-
-                for face_number, face_detail in enumerate(
-                    detected_faces,
-                    start=1
-                ):
-
-                    results.append(
-                        {
-                            "Face": face_number,
-                            "Detection confidence":
-                                round(
-                                    face_detail.get(
-                                        "Confidence",
-                                        0
-                                    ),
-                                    2
-                                ),
-                            "Number of landmarks":
-                                len(
-                                    face_detail.get(
-                                        "Landmarks",
-                                        []
-                                    )
-                                ),
-                            "Image quality brightness":
-                                round(
-                                    face_detail
-                                    .get("Quality", {})
-                                    .get("Brightness", 0),
-                                    2
-                                ),
-                            "Image quality sharpness":
-                                round(
-                                    face_detail
-                                    .get("Quality", {})
-                                    .get("Sharpness", 0),
-                                    2
-                                )
-                        }
-                    )
-
-                results_df = pd.DataFrame(results)
-
-                st.dataframe(
-                    results_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
-
-                selected_face = detected_faces[0]
-
-                metric1, metric2, metric3 = st.columns(3)
-
-                metric1.metric(
-                    "Faces Detected",
-                    len(detected_faces)
-                )
-
-                metric2.metric(
-                    "Detection Confidence",
-                    f"{selected_face.get('Confidence', 0):.2f}%"
-                )
-
-                metric3.metric(
-                    "Landmarks Detected",
-                    len(
-                        selected_face.get(
-                            "Landmarks",
-                            []
-                        )
-                    )
-                )
-
-                st.write("---")
-                st.subheader(
-                    "How Facial Detection Works"
-                )
-
-                st.write("""
-                1. The photograph is sent to a trained computer-vision model.
-
-                2. The model checks whether one or more faces are present.
-
-                3. A bounding box is generated around every detected face.
-
-                4. Important facial landmarks such as the eyes, nose and mouth
-                are identified.
-
-                5. These features could then be used by a separate biometric
-                system to generate a faceprint or biometric template.
-
-                This page stops after face and landmark detection. It does not
-                identify the person or store biometric records.
-                """)
-
-                st.subheader(
-                    "Privacy and Security Considerations"
-                )
-
-                st.write("""
-                Uploaded photographs are processed only for this educational
-                detection demonstration. The application does not create a
-                permanent face database, does not associate the face with a
-                banking account and does not make an authentication decision.
-                """)
-
-        except Exception as error:
-
-            st.error(
-                "The face detection service could not process this image."
-            )
-
-            st.caption(
-                f"Technical detail: {error}"
-            )
 elif page == "Learning Resources":
     st.title("Learning Resources")
 
