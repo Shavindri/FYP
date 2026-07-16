@@ -1433,57 +1433,745 @@ elif page == "Biometric Training Demo":
 
 
 elif page == "Learning Resources":
-    st.title("Learning Resources")
 
-    topic = st.selectbox(
-        "Choose a topic",
+    st.title("Personalised Learning Resources")
+
+    st.write("""
+    Select the score you received from the Cyber Awareness Assessment.
+    The toolkit will recommend learning modules based on your awareness level.
+    """)
+
+    score_range = st.selectbox(
+        "Select your Cyber Awareness Assessment Score",
         [
-            "Phishing Awareness",
-            "OTP Security",
-            "Password Security",
-            "Multi-Factor Authentication",
-            "Safe Online Banking Behaviour",
-            "Biometric Authentication",
-            "AI Scams and Deepfake Fraud"
+            "Select score",
+            "0–20%",
+            "21–40%",
+            "41–60%",
+            "61–80%",
+            "81–100%"
         ]
     )
 
-    if topic == "Phishing Awareness":
-        st.write("""
-        Phishing is a method used by cybercriminals to trick users into revealing sensitive information.
-        Users should avoid clicking suspicious links and should verify messages through official bank channels.
-        """)
+    if score_range == "Select score":
 
-    elif topic == "OTP Security":
-        st.write("""
-        OTPs should never be shared with anyone. Legitimate banks do not ask customers to reveal OTPs,
-        passwords, or PINs.
-        """)
+        st.info(
+            "Complete the Cyber Awareness Assessment first, then select "
+            "your score range to receive personalised learning."
+        )
 
-    elif topic == "Password Security":
-        st.write("""
-        Online banking users should use strong, unique passwords and avoid reusing passwords across accounts.
-        """)
+    else:
 
-    elif topic == "Multi-Factor Authentication":
-        st.write("""
-        Multi-Factor Authentication strengthens account security by requiring more than one method of verification.
-        """)
+        if score_range == "0–20%":
 
-    elif topic == "Safe Online Banking Behaviour":
-        st.write("""
-        Safe online banking behaviour includes avoiding public Wi-Fi, updating banking apps,
-        verifying website authenticity, and monitoring security alerts.
-        """)
+            awareness_level = "Very Low Awareness"
 
-    elif topic == "Biometric Authentication":
-        st.write("""
-        Biometric authentication uses unique physical characteristics such as fingerprints or facial recognition.
-        Users should understand how biometric data is stored, protected, and used.
-        """)
+            message = """
+            Your result indicates that you currently have limited knowledge
+            of online banking cybersecurity. Complete all recommended modules
+            in the suggested order.
+            """
 
-    elif topic == "AI Scams and Deepfake Fraud":
-        st.write("""
-        AI-generated scams and deepfake fraud can imitate real voices, images, or messages.
-        Users should verify urgent financial requests through official banking channels.
-        """)
+            modules = [
+                "Cybersecurity Basics",
+                "Phishing and Scam Detection",
+                "Password and MFA Security",
+                "Safe Online Banking Practices",
+                "Biometric Authentication",
+                "AI and Deepfake Fraud"
+            ]
+
+        elif score_range == "21–40%":
+
+            awareness_level = "Low Awareness"
+
+            message = """
+            You understand some basic cybersecurity concepts, but several
+            important areas still require improvement.
+            """
+
+            modules = [
+                "Phishing and Scam Detection",
+                "Password and MFA Security",
+                "Safe Online Banking Practices",
+                "Biometric Authentication",
+                "AI and Deepfake Fraud"
+            ]
+
+        elif score_range == "41–60%":
+
+            awareness_level = "Moderate Awareness"
+
+            message = """
+            You demonstrate a reasonable understanding of online banking
+            security. The following modules will strengthen your knowledge.
+            """
+
+            modules = [
+                "Advanced Phishing Detection",
+                "Safe Online Banking Practices",
+                "Biometric Authentication",
+                "AI and Deepfake Fraud",
+                "Emerging Cyber Threats"
+            ]
+
+        elif score_range == "61–80%":
+
+            awareness_level = "Good Awareness"
+
+            message = """
+            You already follow many secure online banking practices.
+            Focus on advanced and emerging cybersecurity threats.
+            """
+
+            modules = [
+                "Biometric Authentication",
+                "AI and Deepfake Fraud",
+                "Emerging Cyber Threats",
+                "Advanced Security Practices"
+            ]
+
+        else:
+
+            awareness_level = "High Awareness"
+
+            message = """
+            You demonstrate a high level of cybersecurity awareness.
+            Continue reviewing advanced security practices and emerging threats.
+            """
+
+            modules = [
+                "Emerging AI Threats",
+                "Advanced Security Practices",
+                "Biometric Security and Privacy",
+                "Current Online Banking Threats"
+            ]
+
+        st.write("---")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.metric(
+                "Selected Score Range",
+                score_range
+            )
+
+        with col2:
+            st.metric(
+                "Awareness Level",
+                awareness_level
+            )
+
+        if score_range == "0–20%":
+            st.error(message)
+
+        elif score_range == "21–40%":
+            st.warning(message)
+
+        elif score_range == "41–60%":
+            st.info(message)
+
+        else:
+            st.success(message)
+
+        st.subheader("Recommended Learning Path")
+
+        for number, module_name in enumerate(modules, start=1):
+            st.write(f"{number}. {module_name}")
+
+        st.write("---")
+
+        selected_module = st.selectbox(
+            "Select a Learning Module",
+            modules
+        )
+
+        st.subheader(selected_module)
+
+        # -------------------------------------------------
+        # MODULE 1: CYBERSECURITY BASICS
+        # -------------------------------------------------
+
+        if selected_module == "Cybersecurity Basics":
+
+            st.markdown("""
+            ### Learning Objectives
+
+            By completing this module, you should be able to:
+
+            - Explain what cybersecurity means.
+            - Understand why online banking users are targeted.
+            - Recognise common online banking threats.
+            - Understand why personal information must be protected.
+            """)
+
+            st.markdown("""
+            ### Learning Content
+
+            Cybersecurity is the protection of computers, mobile devices,
+            online accounts, networks and personal information from
+            unauthorised access and cyberattacks.
+
+            Online banking users are targeted because banking accounts contain
+            valuable financial and personal information. Cybercriminals may use
+            phishing emails, fake websites, malicious applications, social
+            engineering and AI-generated scams to steal this information.
+
+            Users can reduce risk by following secure banking practices,
+            protecting login details and responding carefully to suspicious
+            messages.
+            """)
+
+            question = st.radio(
+                "What is the main purpose of cybersecurity?",
+                [
+                    "To increase internet speed",
+                    "To protect systems and personal information",
+                    "To make banking applications faster"
+                ],
+                index=None,
+                key="basics_question"
+            )
+
+            if st.button(
+                "Check Answer",
+                key="check_basics"
+            ):
+
+                if question is None:
+                    st.warning("Select an answer first.")
+
+                elif question == (
+                    "To protect systems and personal information"
+                ):
+                    st.success(
+                        "Correct. Cybersecurity protects systems, accounts "
+                        "and personal information."
+                    )
+
+                else:
+                    st.error(
+                        "Incorrect. The main purpose of cybersecurity is to "
+                        "protect systems and personal information."
+                    )
+
+        # -------------------------------------------------
+        # PHISHING MODULES
+        # -------------------------------------------------
+
+        elif selected_module in [
+            "Phishing and Scam Detection",
+            "Advanced Phishing Detection"
+        ]:
+
+            st.markdown("""
+            ### Learning Objectives
+
+            By completing this module, you should be able to:
+
+            - Recognise suspicious banking emails.
+            - Identify fake banking websites.
+            - Detect SMS and voice phishing attempts.
+            - Verify suspicious requests safely.
+            """)
+
+            st.markdown("""
+            ### Learning Content
+
+            Phishing is a cyberattack in which criminals pretend to be a trusted
+            organisation, such as a bank, to steal personal information.
+
+            Warning signs may include urgent language, unfamiliar sender
+            addresses, spelling errors, suspicious links and requests for
+            passwords, PINs or OTPs.
+
+            Never use a link in a suspicious message. Open your bank's official
+            application or type the official website address directly into your
+            browser.
+            """)
+
+            phishing_question = st.radio(
+                """
+                You receive an email saying your bank account will be suspended
+                unless you click a link. What should you do?
+                """,
+                [
+                    "Click the link immediately",
+                    "Reply with your banking details",
+                    "Verify the message using the bank's official website or contact details"
+                ],
+                index=None,
+                key="phishing_learning_question"
+            )
+
+            if st.button(
+                "Check Answer",
+                key="check_phishing_learning"
+            ):
+
+                if phishing_question is None:
+                    st.warning("Select an answer first.")
+
+                elif phishing_question == (
+                    "Verify the message using the bank's official website or contact details"
+                ):
+                    st.success(
+                        "Correct. Suspicious banking messages should always "
+                        "be verified independently."
+                    )
+
+                else:
+                    st.error(
+                        "Incorrect. Never click suspicious links or share banking details."
+                    )
+
+        # -------------------------------------------------
+        # PASSWORD AND MFA
+        # -------------------------------------------------
+
+        elif selected_module == "Password and MFA Security":
+
+            st.markdown("""
+            ### Learning Objectives
+
+            By completing this module, you should be able to:
+
+            - Create strong and unique passwords.
+            - Avoid password reuse.
+            - Understand Multi-Factor Authentication.
+            - Protect OTPs and authentication codes.
+            """)
+
+            st.markdown("""
+            ### Learning Content
+
+            A strong password should be difficult to guess and should not be
+            reused across different accounts. Password reuse increases the risk
+            of credential stuffing attacks.
+
+            Multi-Factor Authentication adds another verification step beyond a
+            password. This may include an authenticator application, biometric
+            verification or a security key.
+
+            OTPs, PINs and passwords must never be shared with another person,
+            including someone claiming to work for a bank.
+            """)
+
+            mfa_question = st.radio(
+                """
+                Someone claiming to be from your bank asks for your OTP.
+                What should you do?
+                """,
+                [
+                    "Share the OTP",
+                    "Ask why they need it",
+                    "End the interaction and contact the bank through official channels"
+                ],
+                index=None,
+                key="mfa_learning_question"
+            )
+
+            if st.button(
+                "Check Answer",
+                key="check_mfa_learning"
+            ):
+
+                if mfa_question is None:
+                    st.warning("Select an answer first.")
+
+                elif mfa_question == (
+                    "End the interaction and contact the bank through official channels"
+                ):
+                    st.success(
+                        "Correct. OTPs must never be shared."
+                    )
+
+                else:
+                    st.error(
+                        "Incorrect. End the interaction and verify the request "
+                        "through official bank channels."
+                    )
+
+        # -------------------------------------------------
+        # SAFE ONLINE BANKING
+        # -------------------------------------------------
+
+        elif selected_module == "Safe Online Banking Practices":
+
+            st.markdown("""
+            ### Learning Objectives
+
+            By completing this module, you should be able to:
+
+            - Use online banking safely.
+            - Verify banking websites.
+            - Avoid unsafe public Wi-Fi.
+            - Respond correctly to security alerts.
+            - Keep banking applications updated.
+            """)
+
+            st.markdown("""
+            ### Learning Content
+
+            Use your bank's official application or website and carefully check
+            the website address before entering login details.
+
+            Avoid using unsecured public Wi-Fi for online banking. Keep your
+            banking application and device operating system updated.
+
+            Security alerts should be taken seriously. If you receive an
+            unfamiliar login notification, change your password immediately and
+            contact your bank.
+            """)
+
+            safe_question = st.radio(
+                """
+                You receive an alert showing an unfamiliar login to your account.
+                What should you do first?
+                """,
+                [
+                    "Ignore it",
+                    "Wait to see whether it happens again",
+                    "Change your password and contact the bank"
+                ],
+                index=None,
+                key="safe_banking_question"
+            )
+
+            if st.button(
+                "Check Answer",
+                key="check_safe_banking"
+            ):
+
+                if safe_question is None:
+                    st.warning("Select an answer first.")
+
+                elif safe_question == (
+                    "Change your password and contact the bank"
+                ):
+                    st.success(
+                        "Correct. An unfamiliar login alert requires immediate action."
+                    )
+
+                else:
+                    st.error(
+                        "Incorrect. Secure the account immediately and contact the bank."
+                    )
+
+        # -------------------------------------------------
+        # BIOMETRIC MODULES
+        # -------------------------------------------------
+
+        elif selected_module in [
+            "Biometric Authentication",
+            "Biometric Security and Privacy"
+        ]:
+
+            st.markdown("""
+            ### Learning Objectives
+
+            By completing this module, you should be able to:
+
+            - Understand facial and fingerprint authentication.
+            - Explain the purpose of facial landmarks.
+            - Understand biometric templates.
+            - Recognise biometric privacy risks.
+            """)
+
+            st.markdown("""
+            ### Learning Content
+
+            Biometric authentication verifies users using physical or behavioural
+            characteristics such as fingerprints, facial features or voice
+            patterns.
+
+            In facial systems, a model first detects a face and identifies facial
+            landmarks around features such as the eyes, nose, mouth and facial
+            outline.
+
+            In a complete authentication system, these characteristics may be
+            converted into a mathematical biometric template. The template must
+            be protected because biometric information cannot easily be replaced
+            if compromised.
+
+            Use the Biometric Training Demo page to view automatic face and
+            landmark detection.
+            """)
+
+            biometric_question = st.radio(
+                """
+                What should a secure biometric system protect?
+                """,
+                [
+                    "Only the screen colour",
+                    "The biometric template and related personal data",
+                    "The user's internet speed"
+                ],
+                index=None,
+                key="biometric_learning_question"
+            )
+
+            if st.button(
+                "Check Answer",
+                key="check_biometric_learning"
+            ):
+
+                if biometric_question is None:
+                    st.warning("Select an answer first.")
+
+                elif biometric_question == (
+                    "The biometric template and related personal data"
+                ):
+                    st.success(
+                        "Correct. Biometric templates and personal data require strong protection."
+                    )
+
+                else:
+                    st.error(
+                        "Incorrect. Biometric templates and personal information "
+                        "must be secured."
+                    )
+
+        # -------------------------------------------------
+        # AI AND DEEPFAKE MODULES
+        # -------------------------------------------------
+
+        elif selected_module in [
+            "AI and Deepfake Fraud",
+            "Emerging AI Threats"
+        ]:
+
+            st.markdown("""
+            ### Learning Objectives
+
+            By completing this module, you should be able to:
+
+            - Recognise AI-generated scams.
+            - Understand deepfake voice and video risks.
+            - Verify urgent financial requests.
+            - Respond safely to suspicious impersonation.
+            """)
+
+            st.markdown("""
+            ### Learning Content
+
+            Artificial Intelligence can be used to create realistic fake voices,
+            videos, emails and messages.
+
+            A criminal may imitate a bank employee, manager, friend or family
+            member and create urgency to persuade the victim to transfer money or
+            reveal sensitive information.
+
+            Do not rely only on a familiar voice or appearance. Verify urgent
+            requests using official contact details or another trusted method.
+            """)
+
+            ai_question = st.radio(
+                """
+                A caller sounds exactly like your bank manager and asks you to
+                approve an urgent transfer. What should you do?
+                """,
+                [
+                    "Approve the transfer",
+                    "Share your banking details",
+                    "End the call and verify through the bank's official contact details"
+                ],
+                index=None,
+                key="ai_learning_question"
+            )
+
+            if st.button(
+                "Check Answer",
+                key="check_ai_learning"
+            ):
+
+                if ai_question is None:
+                    st.warning("Select an answer first.")
+
+                elif ai_question == (
+                    "End the call and verify through the bank's official contact details"
+                ):
+                    st.success(
+                        "Correct. Voice and video can be imitated using AI."
+                    )
+
+                else:
+                    st.error(
+                        "Incorrect. Always verify urgent financial requests independently."
+                    )
+
+        # -------------------------------------------------
+        # EMERGING THREATS
+        # -------------------------------------------------
+
+        elif selected_module in [
+            "Emerging Cyber Threats",
+            "Current Online Banking Threats"
+        ]:
+
+            st.markdown("""
+            ### Learning Objectives
+
+            By completing this module, you should be able to recognise:
+
+            - Malware and banking trojans.
+            - Credential stuffing.
+            - SIM-swapping.
+            - Man-in-the-Middle attacks.
+            - AI-assisted phishing.
+            """)
+
+            st.markdown("""
+            ### Learning Content
+
+            Malware may steal login details or monitor banking sessions.
+            Credential stuffing uses passwords exposed in previous data breaches.
+            SIM-swapping allows criminals to intercept SMS authentication codes.
+
+            Man-in-the-Middle attacks may intercept communication, particularly
+            when users connect through unsafe networks.
+
+            Protect yourself by using unique passwords, enabling strong MFA,
+            updating devices, avoiding suspicious downloads and monitoring
+            banking activity.
+            """)
+
+            threat_question = st.radio(
+                """
+                Which action reduces the risk of credential stuffing?
+                """,
+                [
+                    "Reuse the same password everywhere",
+                    "Use a unique password for online banking",
+                    "Share passwords with trusted people"
+                ],
+                index=None,
+                key="threat_learning_question"
+            )
+
+            if st.button(
+                "Check Answer",
+                key="check_threat_learning"
+            ):
+
+                if threat_question is None:
+                    st.warning("Select an answer first.")
+
+                elif threat_question == (
+                    "Use a unique password for online banking"
+                ):
+                    st.success(
+                        "Correct. Unique passwords reduce credential-stuffing risk."
+                    )
+
+                else:
+                    st.error(
+                        "Incorrect. Online banking should use a strong, unique password."
+                    )
+
+        # -------------------------------------------------
+        # ADVANCED SECURITY
+        # -------------------------------------------------
+
+        elif selected_module == "Advanced Security Practices":
+
+            st.markdown("""
+            ### Learning Objectives
+
+            By completing this module, you should be able to:
+
+            - Use phishing-resistant authentication.
+            - Review account activity.
+            - Respond safely to authentication prompts.
+            - Understand shared responsibility for banking security.
+            """)
+
+            st.markdown("""
+            ### Learning Content
+
+            Advanced security practices include using phishing-resistant
+            authentication methods where available, reviewing banking activity,
+            checking login alerts and avoiding approval of unexpected
+            authentication requests.
+
+            Banks provide security controls, but customers must use them correctly.
+            Secure online banking therefore depends on both reliable technology
+            and informed user behaviour.
+            """)
+
+            advanced_question = st.radio(
+                """
+                What should you do when you receive an unexpected MFA approval request?
+                """,
+                [
+                    "Approve it to stop the notifications",
+                    "Reject it and secure the account",
+                    "Ignore all future MFA requests"
+                ],
+                index=None,
+                key="advanced_learning_question"
+            )
+
+            if st.button(
+                "Check Answer",
+                key="check_advanced_learning"
+            ):
+
+                if advanced_question is None:
+                    st.warning("Select an answer first.")
+
+                elif advanced_question == (
+                    "Reject it and secure the account"
+                ):
+                    st.success(
+                        "Correct. Unexpected authentication requests may indicate an attack."
+                    )
+
+                else:
+                    st.error(
+                        "Incorrect. Reject unexpected requests and review account security."
+                    )
+
+        st.write("---")
+        st.subheader("Expected Learning Outcome")
+
+        if score_range == "0–20%":
+
+            st.write("""
+            After completing all recommended modules, the user should be able to
+            recognise basic cyber threats, protect passwords and OTPs, respond to
+            suspicious messages and adopt safer online banking behaviour.
+            """)
+
+        elif score_range == "21–40%":
+
+            st.write("""
+            After completing the recommended modules, the user should strengthen
+            their ability to recognise scams, use MFA correctly and respond to
+            suspicious account activity.
+            """)
+
+        elif score_range == "41–60%":
+
+            st.write("""
+            After completing the recommended modules, the user should develop a
+            stronger understanding of biometric security, AI-enabled fraud and
+            emerging online banking threats.
+            """)
+
+        elif score_range == "61–80%":
+
+            st.write("""
+            After completing the recommended modules, the user should improve
+            their knowledge of advanced authentication, biometric privacy and
+            emerging cyber threats.
+            """)
+
+        else:
+
+            st.write("""
+            After completing the recommended modules, the user should maintain
+            high cybersecurity awareness and remain informed about evolving
+            threats and advanced security practices.
+            """)
