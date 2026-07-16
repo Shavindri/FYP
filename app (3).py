@@ -930,7 +930,7 @@ elif page == "Biometric Training Demo":
     st.title("Biometric Facial Identification Training Demonstration")
 
     st.write("""
-    This educational demonstration automatically detects whether a face is
+    This educational demonstration automatically checks whether a face is
     present in an uploaded photograph and displays facial landmarks around
     important facial features.
     """)
@@ -942,173 +942,265 @@ elif page == "Biometric Training Demo":
 
     biometric_html = """
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <style>
-            body {
-                font-family: Arial, sans-serif;
+            * {
+                box-sizing: border-box;
+            }
+
+            html, body {
                 margin: 0;
-                padding: 10px;
-                background-color: transparent;
+                padding: 0;
+                background: transparent;
+                color: #f7f7f7;
+                font-family: Arial, sans-serif;
+            }
+
+            body {
+                padding: 6px;
+            }
+
+            h1, h2, h3, h4, p, ol, li, label, span {
+                color: #f7f7f7;
+            }
+
+            p, li {
+                font-size: 16px;
+                line-height: 1.6;
+            }
+
+            .app-card {
+                width: 100%;
+                background: #161b22;
+                border: 1px solid #30363d;
+                border-radius: 14px;
+                padding: 22px;
             }
 
             .upload-box {
-                border: 2px dashed #999;
-                border-radius: 10px;
-                padding: 20px;
+                background: #1f2630;
+                border: 2px dashed #6b7280;
+                border-radius: 12px;
+                padding: 26px;
                 text-align: center;
-                margin-bottom: 20px;
+                margin-bottom: 18px;
+            }
+
+            .upload-box h3 {
+                margin-top: 0;
+                margin-bottom: 8px;
+                color: #ffffff;
+            }
+
+            .upload-box p {
+                margin-bottom: 16px;
+                color: #d1d5db;
             }
 
             input[type="file"] {
-                margin: 10px;
+                width: 100%;
+                max-width: 440px;
+                padding: 10px;
+                color: #ffffff;
+                background: #111827;
+                border: 1px solid #4b5563;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            input[type="file"]::file-selector-button {
+                margin-right: 12px;
+                padding: 9px 14px;
+                border: 0;
+                border-radius: 7px;
+                background: #ff4b4b;
+                color: #ffffff;
+                font-weight: 600;
+                cursor: pointer;
             }
 
             #status {
-                margin: 15px 0;
-                padding: 12px;
-                border-radius: 8px;
-                font-weight: bold;
+                margin: 18px 0;
+                padding: 14px 16px;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: 650;
             }
 
             .loading {
-                background-color: #e8f1ff;
-                color: #174ea6;
+                background: #17365d;
+                border: 1px solid #2f6fae;
+                color: #ffffff;
             }
 
             .success {
-                background-color: #e7f7ed;
-                color: #137333;
+                background: #123f2c;
+                border: 1px solid #2c8a5b;
+                color: #ffffff;
             }
 
             .error {
-                background-color: #fce8e6;
-                color: #c5221f;
+                background: #5a1f27;
+                border: 1px solid #b84a58;
+                color: #ffffff;
             }
 
-            .image-container {
-                position: relative;
-                display: inline-block;
-                max-width: 100%;
+            .image-wrapper {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-top: 12px;
             }
 
-            #uploadedImage {
-                display: none;
-                max-width: 100%;
-                max-height: 600px;
-                border-radius: 8px;
-            }
-
+            #uploadedImage,
             #outputCanvas {
                 display: none;
+                width: auto;
                 max-width: 100%;
-                max-height: 600px;
-                border-radius: 8px;
+                max-height: 620px;
+                border-radius: 12px;
+                border: 1px solid #374151;
+                background: #000000;
             }
 
             .results {
-                margin-top: 20px;
                 display: none;
+                margin-top: 26px;
             }
 
             .metric-grid {
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
-                gap: 12px;
-                margin-top: 15px;
+                gap: 14px;
+                margin: 16px 0 28px;
             }
 
             .metric {
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                padding: 12px;
+                background: #1f2630;
+                border: 1px solid #374151;
+                border-radius: 12px;
+                padding: 18px 14px;
                 text-align: center;
             }
 
             .metric-value {
-                font-size: 24px;
-                font-weight: bold;
+                color: #58d6ff;
+                font-size: 34px;
+                font-weight: 750;
+                line-height: 1.2;
             }
 
             .metric-label {
-                font-size: 13px;
-                color: #555;
+                margin-top: 7px;
+                color: #c7cbd1;
+                font-size: 14px;
+            }
+
+            .explanation {
+                background: #1f2630;
+                border: 1px solid #374151;
+                border-radius: 12px;
+                padding: 18px 22px;
+            }
+
+            .explanation li,
+            .explanation p {
+                color: #e5e7eb;
+            }
+
+            .privacy-note {
+                margin-top: 18px;
+                padding: 14px 16px;
+                border-radius: 10px;
+                background: #24202f;
+                border: 1px solid #5b4b73;
+                color: #eee9f5;
             }
 
             @media (max-width: 700px) {
                 .metric-grid {
                     grid-template-columns: 1fr;
                 }
+
+                .app-card {
+                    padding: 14px;
+                }
             }
         </style>
     </head>
 
     <body>
+        <div class="app-card">
 
-        <div class="upload-box">
-            <h3>Upload a Photograph</h3>
+            <div class="upload-box">
+                <h3>Upload a Photograph</h3>
+                <p>Select a clear JPG or PNG image. The face should be visible and reasonably front-facing.</p>
 
-            <p>
-                Select a clear JPG or PNG image containing a front-facing face.
-            </p>
+                <input
+                    type="file"
+                    id="imageUpload"
+                    accept="image/jpeg,image/png"
+                >
+            </div>
 
-            <input
-                type="file"
-                id="imageUpload"
-                accept="image/jpeg,image/png"
-            >
-        </div>
+            <div id="status" class="loading">
+                Loading facial landmark detection model...
+            </div>
 
-        <div id="status" class="loading">
-            Loading facial landmark detection model...
-        </div>
+            <div class="image-wrapper">
+                <img id="uploadedImage" alt="Uploaded photograph">
+                <canvas id="outputCanvas"></canvas>
+            </div>
 
-        <div class="image-container">
-            <img id="uploadedImage">
-            <canvas id="outputCanvas"></canvas>
-        </div>
+            <div id="results" class="results">
 
-        <div id="results" class="results">
+                <h3>Detection Results</h3>
 
-            <h3>Detection Results</h3>
+                <div class="metric-grid">
+                    <div class="metric">
+                        <div id="faceCount" class="metric-value">0</div>
+                        <div class="metric-label">Faces Detected</div>
+                    </div>
 
-            <div class="metric-grid">
+                    <div class="metric">
+                        <div id="landmarkCount" class="metric-value">0</div>
+                        <div class="metric-label">Landmarks Detected</div>
+                    </div>
 
-                <div class="metric">
-                    <div id="faceCount" class="metric-value">0</div>
-                    <div class="metric-label">Faces Detected</div>
+                    <div class="metric">
+                        <div id="detectionResult" class="metric-value">No</div>
+                        <div class="metric-label">Face Present</div>
+                    </div>
                 </div>
 
-                <div class="metric">
-                    <div id="landmarkCount" class="metric-value">0</div>
-                    <div class="metric-label">Landmarks Detected</div>
+                <div class="explanation">
+                    <h3>How Face Detection Works</h3>
+
+                    <ol>
+                        <li>The selected photograph is loaded in the user's browser.</li>
+                        <li>The facial landmark model analyses the image.</li>
+                        <li>The model checks whether one or more faces are present.</li>
+                        <li>Facial landmark coordinates are generated.</li>
+                        <li>The detected landmarks are drawn over the photograph.</li>
+                    </ol>
+
+                    <p>
+                        In a complete biometric authentication system, facial
+                        characteristics may be processed further to generate a
+                        protected biometric template or face embedding.
+                    </p>
                 </div>
 
-                <div class="metric">
-                    <div id="detectionResult" class="metric-value">No</div>
-                    <div class="metric-label">Face Present</div>
+                <div class="privacy-note">
+                    The selected photograph is processed for this visual demonstration.
+                    This page does not create a face database or identify the person.
                 </div>
 
             </div>
-
-            <h3>How Detection Works</h3>
-
-            <ol>
-                <li>The photograph is loaded into the browser.</li>
-                <li>The facial landmark model examines the image.</li>
-                <li>The model checks whether a face is present.</li>
-                <li>Facial landmark coordinates are generated.</li>
-                <li>The detected landmarks are drawn over the photograph.</li>
-            </ol>
-
-            <p>
-                In a complete biometric authentication system, these facial
-                characteristics may be processed further to generate a protected
-                biometric template or face embedding.
-            </p>
-
         </div>
 
         <script type="module">
@@ -1117,287 +1209,211 @@ elif page == "Biometric Training Demo":
                 FaceLandmarker,
                 FilesetResolver,
                 DrawingUtils
-            } from
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
+            } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
 
-            const statusBox =
-                document.getElementById("status");
+            const statusBox = document.getElementById("status");
+            const uploadInput = document.getElementById("imageUpload");
+            const imageElement = document.getElementById("uploadedImage");
+            const canvas = document.getElementById("outputCanvas");
+            const canvasContext = canvas.getContext("2d");
+            const resultsSection = document.getElementById("results");
+            const faceCount = document.getElementById("faceCount");
+            const landmarkCount = document.getElementById("landmarkCount");
+            const detectionResult = document.getElementById("detectionResult");
 
-            const uploadInput =
-                document.getElementById("imageUpload");
+            let faceLandmarker = null;
 
-            const imageElement =
-                document.getElementById("uploadedImage");
-
-            const canvas =
-                document.getElementById("outputCanvas");
-
-            const canvasContext =
-                canvas.getContext("2d");
-
-            const resultsSection =
-                document.getElementById("results");
-
-            const faceCount =
-                document.getElementById("faceCount");
-
-            const landmarkCount =
-                document.getElementById("landmarkCount");
-
-            const detectionResult =
-                document.getElementById("detectionResult");
-
-            let faceLandmarker;
+            function setStatus(type, message) {
+                statusBox.className = type;
+                statusBox.textContent = message;
+            }
 
             async function initialiseFaceLandmarker() {
-
                 try {
+                    const vision = await FilesetResolver.forVisionTasks(
+                        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+                    );
 
-                    const vision =
-                        await FilesetResolver.forVisionTasks(
-                            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-                        );
+                    faceLandmarker = await FaceLandmarker.createFromOptions(
+                        vision,
+                        {
+                            baseOptions: {
+                                modelAssetPath:
+                                    "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
+                                delegate: "GPU"
+                            },
+                            runningMode: "IMAGE",
+                            numFaces: 5,
+                            minFaceDetectionConfidence: 0.5,
+                            minFacePresenceConfidence: 0.5,
+                            minTrackingConfidence: 0.5
+                        }
+                    );
 
-                    faceLandmarker =
-                        await FaceLandmarker.createFromOptions(
-                            vision,
-                            {
-                                baseOptions: {
-                                    modelAssetPath:
-                                        "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
-                                    delegate: "GPU"
-                                },
-
-                                runningMode: "IMAGE",
-
-                                numFaces: 5,
-
-                                minFaceDetectionConfidence: 0.5,
-
-                                minFacePresenceConfidence: 0.5,
-
-                                minTrackingConfidence: 0.5
-                            }
-                        );
-
-                    statusBox.className = "success";
-
-                    statusBox.textContent =
-                        "The face detection model is ready. Upload a photograph.";
+                    setStatus(
+                        "success",
+                        "The face detection model is ready. Upload a photograph."
+                    );
 
                 } catch (error) {
-
                     console.error(error);
 
-                    statusBox.className = "error";
-
-                    statusBox.textContent =
-                        "The facial detection model could not be loaded. Refresh the page and try again.";
+                    setStatus(
+                        "error",
+                        "The facial detection model could not be loaded. Refresh the page and try again."
+                    );
                 }
             }
 
-            uploadInput.addEventListener(
-                "change",
-                function(event) {
+            uploadInput.addEventListener("change", function(event) {
+                const selectedFile = event.target.files[0];
 
-                    const selectedFile =
-                        event.target.files[0];
-
-                    if (!selectedFile) {
-                        return;
-                    }
-
-                    if (!faceLandmarker) {
-
-                        statusBox.className = "error";
-
-                        statusBox.textContent =
-                            "The model is still loading. Wait a moment and try again.";
-
-                        return;
-                    }
-
-                    const fileReader =
-                        new FileReader();
-
-                    fileReader.onload =
-                        function(loadEvent) {
-
-                            imageElement.onload =
-                                function() {
-
-                                    detectFace();
-                                };
-
-                            imageElement.src =
-                                loadEvent.target.result;
-                        };
-
-                    fileReader.readAsDataURL(
-                        selectedFile
-                    );
-                }
-            );
-
-            function detectFace() {
-
-                statusBox.className = "loading";
-
-                statusBox.textContent =
-                    "Analysing the photograph...";
-
-                const detection =
-                    faceLandmarker.detect(
-                        imageElement
-                    );
-
-                canvas.width =
-                    imageElement.naturalWidth;
-
-                canvas.height =
-                    imageElement.naturalHeight;
-
-                canvasContext.clearRect(
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
-
-                canvasContext.drawImage(
-                    imageElement,
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
-
-                const detectedLandmarks =
-                    detection.faceLandmarks || [];
-
-                resultsSection.style.display =
-                    "block";
-
-                if (detectedLandmarks.length === 0) {
-
-                    canvas.style.display =
-                        "none";
-
-                    imageElement.style.display =
-                        "block";
-
-                    statusBox.className =
-                        "error";
-
-                    statusBox.textContent =
-                        "No face was detected in the uploaded photograph.";
-
-                    faceCount.textContent =
-                        "0";
-
-                    landmarkCount.textContent =
-                        "0";
-
-                    detectionResult.textContent =
-                        "No";
-
+                if (!selectedFile) {
                     return;
                 }
 
-                const drawingUtils =
-                    new DrawingUtils(
-                        canvasContext
+                if (!faceLandmarker) {
+                    setStatus(
+                        "error",
+                        "The model is still loading. Wait a moment and select the image again."
                     );
-
-                for (
-                    const landmarks of detectedLandmarks
-                ) {
-
-                    drawingUtils.drawConnectors(
-                        landmarks,
-                        FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-                        {
-                            color: "#C0C0C070",
-                            lineWidth: 1
-                        }
-                    );
-
-                    drawingUtils.drawConnectors(
-                        landmarks,
-                        FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-                        {
-                            color: "#FF3030",
-                            lineWidth: 2
-                        }
-                    );
-
-                    drawingUtils.drawConnectors(
-                        landmarks,
-                        FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-                        {
-                            color: "#30FF30",
-                            lineWidth: 2
-                        }
-                    );
-
-                    drawingUtils.drawConnectors(
-                        landmarks,
-                        FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
-                        {
-                            color: "#E0E0E0",
-                            lineWidth: 2
-                        }
-                    );
-
-                    drawingUtils.drawConnectors(
-                        landmarks,
-                        FaceLandmarker.FACE_LANDMARKS_LIPS,
-                        {
-                            color: "#E030E0",
-                            lineWidth: 2
-                        }
-                    );
+                    return;
                 }
 
-                imageElement.style.display =
-                    "none";
+                const fileReader = new FileReader();
 
-                canvas.style.display =
-                    "block";
+                fileReader.onload = function(loadEvent) {
+                    imageElement.onload = function() {
+                        detectFace();
+                    };
 
-                statusBox.className =
-                    "success";
+                    imageElement.src = loadEvent.target.result;
+                };
 
-                statusBox.textContent =
-                    detectedLandmarks.length +
-                    " face(s) detected successfully.";
+                fileReader.readAsDataURL(selectedFile);
+            });
 
-                faceCount.textContent =
-                    detectedLandmarks.length;
+            function detectFace() {
+                setStatus("loading", "Analysing the photograph...");
 
-                landmarkCount.textContent =
-                    detectedLandmarks.reduce(
+                try {
+                    const detection = faceLandmarker.detect(imageElement);
+
+                    canvas.width = imageElement.naturalWidth;
+                    canvas.height = imageElement.naturalHeight;
+
+                    canvasContext.clearRect(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+                    canvasContext.drawImage(
+                        imageElement,
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+                    const detectedLandmarks = detection.faceLandmarks || [];
+
+                    resultsSection.style.display = "block";
+
+                    if (detectedLandmarks.length === 0) {
+                        canvas.style.display = "none";
+                        imageElement.style.display = "block";
+
+                        faceCount.textContent = "0";
+                        landmarkCount.textContent = "0";
+                        detectionResult.textContent = "No";
+
+                        setStatus(
+                            "error",
+                            "No face was detected. Upload a clearer photograph with a visible face."
+                        );
+
+                        return;
+                    }
+
+                    const drawingUtils = new DrawingUtils(canvasContext);
+
+                    for (const landmarks of detectedLandmarks) {
+                        drawingUtils.drawConnectors(
+                            landmarks,
+                            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+                            {color: "#b9c0c766", lineWidth: 1}
+                        );
+
+                        drawingUtils.drawConnectors(
+                            landmarks,
+                            FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+                            {color: "#ff5353", lineWidth: 2}
+                        );
+
+                        drawingUtils.drawConnectors(
+                            landmarks,
+                            FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+                            {color: "#42e36f", lineWidth: 2}
+                        );
+
+                        drawingUtils.drawConnectors(
+                            landmarks,
+                            FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+                            {color: "#f0f2f5", lineWidth: 2}
+                        );
+
+                        drawingUtils.drawConnectors(
+                            landmarks,
+                            FaceLandmarker.FACE_LANDMARKS_LIPS,
+                            {color: "#f05be8", lineWidth: 2}
+                        );
+                    }
+
+                    imageElement.style.display = "none";
+                    canvas.style.display = "block";
+
+                    faceCount.textContent = detectedLandmarks.length;
+
+                    landmarkCount.textContent = detectedLandmarks.reduce(
                         function(total, landmarks) {
                             return total + landmarks.length;
                         },
                         0
                     );
 
-                detectionResult.textContent =
-                    "Yes";
+                    detectionResult.textContent = "Yes";
+
+                    setStatus(
+                        "success",
+                        detectedLandmarks.length +
+                        " face(s) detected successfully."
+                    );
+
+                } catch (error) {
+                    console.error(error);
+
+                    canvas.style.display = "none";
+                    imageElement.style.display = "block";
+
+                    setStatus(
+                        "error",
+                        "The image could not be analysed. Try another clear JPG or PNG photograph."
+                    );
+                }
             }
 
             initialiseFaceLandmarker();
 
         </script>
-
     </body>
     </html>
     """
 
     components.html(
         biometric_html,
-        height=1100,
+        height=1200,
         scrolling=True
     )
 
@@ -1418,10 +1434,11 @@ elif page == "Biometric Training Demo":
     st.subheader("Privacy Considerations")
 
     st.write("""
-    The browser processes the selected photograph for the visual demonstration.
-    The application does not add the photograph to the research dataset and does
-    not associate the face with a banking account.
+    The photograph is selected and processed in the browser for the visual
+    demonstration. The application does not add it to the research dataset,
+    associate it with a banking account or create a permanent biometric record.
     """)
+
 
 elif page == "Learning Resources":
     st.title("Learning Resources")
