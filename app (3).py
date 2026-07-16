@@ -1419,17 +1419,6 @@ elif page == "Biometric Training Demo":
 
     st.write("---")
 
-    st.subheader("Academic Limitation")
-
-    st.write("""
-    This demonstration detects faces and facial landmarks but does not perform
-    facial identification. Facial identification would require the detected
-    features to be converted into a secure biometric embedding and compared
-    against an enrolled reference template.
-
-    This page intentionally stops at landmark detection because no biometric
-    database is used in this research prototype.
-    """)
 
     st.subheader("Privacy Considerations")
 
@@ -1437,6 +1426,9 @@ elif page == "Biometric Training Demo":
     The photograph is selected and processed in the browser for the visual
     demonstration. The application does not add it to the research dataset,
     associate it with a banking account or create a permanent biometric record.
+
+    This page intentionally stops at landmark detection because no biometric
+    database is used in this research prototype.
     """)
 
 
