@@ -162,10 +162,7 @@ elif page == "Dataset Overview":
 
     st.write("---")
 
-    # -------------------------------------------------
-    # DATASET SUMMARY METRICS
-    # -------------------------------------------------
-
+    
     st.subheader("Dataset Summary")
 
     col1, col2, col3, col4 = st.columns(4)
@@ -177,9 +174,7 @@ elif page == "Dataset Overview":
 
     st.write("---")
 
-    # -------------------------------------------------
-    # DATASET INFORMATION
-    # -------------------------------------------------
+    
 
     st.subheader("Dataset Information")
 
@@ -207,10 +202,6 @@ elif page == "Dataset Overview":
     )
 
     st.write("---")
-
-    # -------------------------------------------------
-    # SURVEY STRUCTURE
-    # -------------------------------------------------
 
     st.subheader("Survey Structure")
 
@@ -245,10 +236,6 @@ elif page == "Dataset Overview":
 
     st.write("---")
 
-    # -------------------------------------------------
-    # DATASET PREVIEW
-    # -------------------------------------------------
-
     st.subheader("Dataset Preview")
 
     preview_rows = st.slider(
@@ -265,10 +252,6 @@ elif page == "Dataset Overview":
 
     st.write("---")
 
-    # -------------------------------------------------
-    # DATA TYPES
-    # -------------------------------------------------
-
     st.subheader("Data Types")
 
     datatype_table = pd.DataFrame({
@@ -284,9 +267,6 @@ elif page == "Dataset Overview":
 
     st.write("---")
 
-    # -------------------------------------------------
-    # DATA TYPE SUMMARY
-    # -------------------------------------------------
 
     st.subheader("Data Type Summary")
 
@@ -309,9 +289,6 @@ elif page == "Dataset Overview":
 
     st.write("---")
 
-    # -------------------------------------------------
-    # MISSING VALUES
-    # -------------------------------------------------
 
     st.subheader("Missing Value Analysis")
 
@@ -335,10 +312,6 @@ elif page == "Dataset Overview":
         )
 
     st.write("---")
-
-    # -------------------------------------------------
-    # NUMERICAL SUMMARY
-    # -------------------------------------------------
 
     st.subheader("Numerical Variable Summary")
 
@@ -372,9 +345,6 @@ elif page == "Dataset Overview":
 
     st.write("---")
 
-    # -------------------------------------------------
-    # CATEGORICAL SUMMARY
-    # -------------------------------------------------
 
     st.subheader("Categorical Variable Summary")
 
@@ -415,10 +385,6 @@ elif page == "Exploratory Data Analysis":
     survey dataset. Use the filters to explore how demographic characteristics,
     online banking usage and cybersecurity-related scores vary across respondents.
     """)
-
-    # -------------------------------------------------
-    # FILTERS
-    # -------------------------------------------------
 
     st.subheader("Interactive Filters")
 
@@ -474,10 +440,6 @@ elif page == "Exploratory Data Analysis":
 
     else:
 
-        # -------------------------------------------------
-        # SUMMARY METRICS
-        # -------------------------------------------------
-
         st.write("---")
         st.subheader("Filtered Dataset Summary")
 
@@ -503,9 +465,6 @@ elif page == "Exploratory Data Analysis":
             f"{filtered_df['Biometric_Score'].mean():.2f}"
         )
 
-        # =================================================
-        # UNIVARIATE ANALYSIS
-        # =================================================
 
         st.write("---")
         st.header("Univariate Analysis")
@@ -516,9 +475,6 @@ elif page == "Exploratory Data Analysis":
         of individual variables.
         """)
 
-        # -------------------------------------------------
-        # CATEGORICAL DISTRIBUTIONS
-        # -------------------------------------------------
 
         st.subheader("Categorical Variable Distributions")
 
@@ -598,10 +554,6 @@ elif page == "Exploratory Data Analysis":
 
             plt.close(fig)
 
-        # -------------------------------------------------
-        # HISTOGRAMS
-        # -------------------------------------------------
-
         st.subheader("Score Distribution")
 
         score_columns = [
@@ -669,9 +621,6 @@ elif page == "Exploratory Data Analysis":
 
             plt.close(fig)
 
-        # -------------------------------------------------
-        # DESCRIPTIVE TABLE
-        # -------------------------------------------------
 
         st.subheader("Descriptive Statistics")
 
@@ -692,22 +641,14 @@ elif page == "Exploratory Data Analysis":
             hide_index=True
         )
 
-        # =================================================
-        # BIVARIATE ANALYSIS
-        # =================================================
 
         st.write("---")
         st.header("Bivariate Analysis")
 
-        st.write("""
-        Bivariate analysis examines the relationship between two variables.
+        st.write("""Bivariate analysis examines the relationship between two variables.
         The charts below compare cybersecurity scores with demographic and
         online banking characteristics.
         """)
-
-        # -------------------------------------------------
-        # CATEGORY VS SCORE BOXPLOT
-        # -------------------------------------------------
 
         st.subheader("Group Comparison")
 
@@ -766,10 +707,6 @@ elif page == "Exploratory Data Analysis":
         st.pyplot(fig)
 
         plt.close(fig)
-
-        # -------------------------------------------------
-        # SCATTER PLOT
-        # -------------------------------------------------
 
         st.subheader("Relationship Between Scores")
 
@@ -831,10 +768,6 @@ elif page == "Exploratory Data Analysis":
             f"{correlation_value:.3f}"
         )
 
-        # -------------------------------------------------
-        # STACKED BAR CHART
-        # -------------------------------------------------
-
         st.subheader("Awareness Level by Gender")
 
         stacked_table = pd.crosstab(
@@ -864,10 +797,6 @@ elif page == "Exploratory Data Analysis":
 
         plt.close(fig)
 
-        # =================================================
-        # MULTIVARIATE ANALYSIS
-        # =================================================
-
         st.write("---")
         st.header("Multivariate Analysis")
 
@@ -876,10 +805,6 @@ elif page == "Exploratory Data Analysis":
         variables. It helps identify broader patterns across awareness,
         behaviour, opinions and biometric understanding.
         """)
-
-        # -------------------------------------------------
-        # CORRELATION HEATMAP
-        # -------------------------------------------------
 
         st.subheader("Correlation Heatmap")
 
@@ -910,10 +835,6 @@ elif page == "Exploratory Data Analysis":
 
         plt.close(fig)
 
-        # -------------------------------------------------
-        # PAIR PLOT
-        # -------------------------------------------------
-
         st.subheader("Pairwise Score Analysis")
 
         pairplot_data = (
@@ -942,11 +863,6 @@ elif page == "Exploratory Data Analysis":
             st.info(
                 "Not enough records are available for pairwise analysis."
             )
-
-        # -------------------------------------------------
-        # BUBBLE CHART
-        # -------------------------------------------------
-
         st.subheader("Bubble Chart")
 
         fig, ax = plt.subplots(figsize=(9, 6))
@@ -982,10 +898,6 @@ elif page == "Exploratory Data Analysis":
         st.pyplot(fig)
 
         plt.close(fig)
-
-        # -------------------------------------------------
-        # AVERAGE SCORE COMPARISON
-        # -------------------------------------------------
 
         st.subheader("Average Composite Scores")
 
@@ -1027,10 +939,6 @@ elif page == "Exploratory Data Analysis":
 
         plt.close(fig)
 
-        # =================================================
-        # KEY FINDINGS
-        # =================================================
-
         st.write("---")
         st.header("Key Findings")
 
@@ -1061,8 +969,7 @@ elif page == "Exploratory Data Analysis":
         )
 
         st.write(
-            f"""
-            The selected dataset contains **{len(filtered_df)} respondents**.
+            f"""The selected dataset contains **{len(filtered_df)} respondents**.
             The average awareness score is **{awareness_mean:.2f}**, while the
             average behaviour score is **{behaviour_mean:.2f}** and the average
             biometric score is **{biometric_mean:.2f}**.
@@ -1073,10 +980,6 @@ elif page == "Exploratory Data Analysis":
             and online banking usage patterns.
             """
         )
-
-        # -------------------------------------------------
-        # FILTERED DATA
-        # -------------------------------------------------
 
         st.write("---")
         st.subheader("Filtered Dataset")
@@ -2407,10 +2310,7 @@ elif page == "Learning Resources":
                         "protect systems and personal information."
                     )
 
-        # -------------------------------------------------
-        # PHISHING MODULES
-        # -------------------------------------------------
-
+        
         elif selected_module in [
             "Phishing and Scam Detection",
             "Advanced Phishing Detection"
@@ -2476,10 +2376,7 @@ elif page == "Learning Resources":
                         "Incorrect. Never click suspicious links or share banking details."
                     )
 
-        # -------------------------------------------------
-        # PASSWORD AND MFA
-        # -------------------------------------------------
-
+  
         elif selected_module == "Password and MFA Security":
 
             st.markdown("""
@@ -2542,10 +2439,7 @@ elif page == "Learning Resources":
                         "through official bank channels."
                     )
 
-        # -------------------------------------------------
-        # SAFE ONLINE BANKING
-        # -------------------------------------------------
-
+      
         elif selected_module == "Safe Online Banking Practices":
 
             st.markdown("""
@@ -2606,10 +2500,6 @@ elif page == "Learning Resources":
                     st.error(
                         "Incorrect. Secure the account immediately and contact the bank."
                     )
-
-        # -------------------------------------------------
-        # BIOMETRIC MODULES
-        # -------------------------------------------------
 
         elif selected_module in [
             "Biometric Authentication",
@@ -2680,10 +2570,7 @@ elif page == "Learning Resources":
                         "must be secured."
                     )
 
-        # -------------------------------------------------
-        # AI AND DEEPFAKE MODULES
-        # -------------------------------------------------
-
+   
         elif selected_module in [
             "AI and Deepfake Fraud",
             "Emerging AI Threats"
@@ -2747,10 +2634,7 @@ elif page == "Learning Resources":
                         "Incorrect. Always verify urgent financial requests independently."
                     )
 
-        # -------------------------------------------------
-        # EMERGING THREATS
-        # -------------------------------------------------
-
+      
         elif selected_module in [
             "Emerging Cyber Threats",
             "Current Online Banking Threats"
@@ -2815,10 +2699,7 @@ elif page == "Learning Resources":
                         "Incorrect. Online banking should use a strong, unique password."
                     )
 
-        # -------------------------------------------------
-        # ADVANCED SECURITY
-        # -------------------------------------------------
-
+   
         elif selected_module == "Advanced Security Practices":
 
             st.markdown("""
